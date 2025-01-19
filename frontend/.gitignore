@@ -27,8 +27,10 @@ dist-ssr
 *letsencrypt*
 *data*
 
-*src*
+*Components*
 *docker-compose.yml*
 *Dockerfile*
 *nginx.default.conf*
-
+*Contexts*
+*Pages*
+*SweetLatexApiClient.js*
