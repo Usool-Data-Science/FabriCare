@@ -1,0 +1,2 @@
+FLASK_APP=sweet.py
+FLASK_DEBUG=1

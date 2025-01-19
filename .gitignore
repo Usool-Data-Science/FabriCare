@@ -1,1 +1,14 @@
-*backend*
+*app.py*
+*artist.py*
+*auth.py*
+*migrations*
+*venv*
+*config.py*
+*main.py*
+*models.py*
+*requirements.txt*
+*fakes.py*
+*carts.py*
+*orders.py*
+*decorators.py*
+*schemas.py*
