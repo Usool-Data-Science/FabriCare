@@ -27,5 +27,8 @@ dist-ssr
 *letsencrypt*
 *data*
 *Components*
-*Contexts*
+ArtistProvider.jsx
+CartProvider.jsx
+FlashProvider.jsx
+OrderProvider.jsx
 *Pages*
