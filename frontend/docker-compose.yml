@@ -1,0 +1,83 @@
+services:
+  frontend:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    container_name: frontend
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+      - ./dist:/usr/share/nginx/html
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - mynet
+
+  api:
+    build: ../backend
+    image: api
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+    ports:
+      - "5000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    env_file:
+      - ../backend/.env
+    volumes:
+      - ../backend/mysqlData:/mysqlData
+    restart: always
+    networks:
+      - mynet
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:5000/health" ] # Health check endpoint
+      interval: 30s # Check every 30 seconds
+      retries: 3 # Retry 3 times before considering unhealthy
+      timeout: 10s # Timeout after 10 seconds
+      start_period: 40s # Wait 5 seconds before starting the health check
+
+  redis:
+    image: redis
+    container_name: redis
+    restart: always
+    networks:
+      - mynet
+  mysql:
+    image: mysql
+    container_name: mysql
+    hostname: mysql
+    healthcheck:
+      test: [ 'CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 --password="${MYSQL_ROOT_PASSWORD}" --silent' ]
+      interval: 3s
+      retries: 5
+      start_period: 30s
+    ports:
+      - "3306"
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_DATABASE: '${DB_NAME}'
+      MYSQL_USER: '${DB_USER}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+    networks:
+      - mynet
+    volumes:
+      - ../backend/mysqlData:/var/lib/mysql
+    # command: [ "mysqld",
+    #   "--character-set-server=utf8mb4",
+    #   "--collation-server=utf8mb4_unicode_ci",
+    #   "--bind-address=0.0.0.0",
+    #   "--require_secure_transport=ON"]
+
+networks:
+  mynet:
+    external: true

@@ -1,5 +1,5 @@
 # FabriCare
-![FabriCare Logo](frontend/public/logo.jpg)
+![FabriCare Logo](frontend/public/images/Fabricare.png)
 
 ## Introduction
 **FabriCare** is an innovative online platform designed for the sale of clothes, sweaters, and other fashion outfits. This application provides a seamless solution for managing product sales and inventory, offering an exceptional user experience for both customers and administrators.
