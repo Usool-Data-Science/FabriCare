@@ -17,10 +17,9 @@ import ResetRequestPage from "./Pages/ResetRequestPage"
 import ResetPage from "./Pages/ResetPage"
 
 
-
 function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-black bg-opacity-85 text-gray-100 overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-opacity-85 text-gray-100 overflow-hidden" style={{ backgroundColor: '#000' }}>
       {/* <Header /> */}
       <ProviderStore>
         <Routes>

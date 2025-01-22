@@ -26,10 +26,6 @@ dist-ssr
 *mysqlData*
 *letsencrypt*
 *data*
-
 *Components*
-*docker-compose.yml*
-*Dockerfile*
-*nginx.default.conf*
 *Contexts*
 *Pages*
