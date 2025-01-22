@@ -1,0 +1,23 @@
+STAGE 1 (Basic API setup)
+1. create api/, api/__init__.py, api/app.py
+2. create an app factory function in the app.py, instantiate extensions, and initiate them
+3. create the models.py and import it before the routes blueprints in app.py
+4. create the app's run.py in the root directory, import the create_app function and define the cli command for fake data generation.
+5. Import the create_app, marshmallow and db instance into the __init__.py
+6. Test run the app to see if it works perfectly.
+
+STAGE 2 (SCHEMA DEFINITION)
+7. Define all models and logic schemas, don't forget to use enum like this:
+from enum import Enum
+class OrderStatus(Enum):
+    PENDING = "pending"
+    COMPLETED = "completed"
+    FAILED = "failed"
+status: so.Mapped[OrderStatus] = so.mapped_column(sa.Enum(OrderStatus), nullable=False)
+
+8. Write all error_handlers, and handle 403, 404, 409 error explicitly in the routes decorators
+
+
+
+STAGE 3 (ROUTING LOGIC)
+7. Create the auth.py and its children (basic_auth, token_auth) verify and error_handlers.
