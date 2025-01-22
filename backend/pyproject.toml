@@ -1,0 +1,38 @@
+[project]
+name = "sweetLatex API"
+version = "1.0"
+description = "A modern Flask API backend for sweet latex ecommerce."
+authors = [
+    { name = "Adeshina Ibrahim", email = "adeshinaibrahim10@gmail.com" },
+]
+readme = "README.md"
+license = { file = "LICENSE" }
+dependencies = [
+    "apifairy",
+    "faker",
+    "flask",
+    "flask-cors",
+    "flask-httpauth",
+    "flask-mail",
+    "flask-marshmallow",
+    "flask-migrate",
+    "flask-sqlalchemy",
+    "gunicorn",
+    "marshmallow-sqlalchemy",
+    "pyjwt",
+    "python-dotenv",
+    "requests",
+    "stripe",
+]
+
+[project.optional-dependencies]
+dev = [
+    "flake8",
+    "pytest",
+    "pytest-cov",
+    "tox",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
