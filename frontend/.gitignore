@@ -26,5 +26,12 @@ dist-ssr
 *mysqlData*
 *letsencrypt*
 *data*
-*Components*
+Body.jsx
+ClothCard.jsx
+Header.jsx
+NavBar.jsx
+ProductSale.jsx
+Sale.jsx
+CarouselTest.jsx
+Fontchanger.jsx
 *Pages*
