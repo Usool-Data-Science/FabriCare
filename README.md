@@ -14,6 +14,13 @@
 3. **State Management**: Utilizes Context API for effective state handling.
 4. **Admin Dashboard**: Empowers administrators to create, track, and manage inventories.
 
+## Additional Features
+1. User-Friendly Interface: Easy navigation for both customers and administrators.
+2. Inventory Management: Efficient tracking of stock levels and sales data.
+3. Secure Transactions: Ensures safe and reliable payment processing.
+4. Order Tracking: Real-time updates on order status for customers.
+5. Customizable Listings: Detailed product descriptions and images for better customer engagement.
+
 ### Backend
 1. **REST API**: Provides paginated JSON responses for all services.
 2. **Database Migrations**: Simplifies database integration and version control.
