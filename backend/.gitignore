@@ -5,6 +5,7 @@
 instance/*
 !instance/.gitignore
 .webassets-cache
+*.db
 
 ### Flask.Python Stack ###
 # Byte-compiled / optimized / DLL files
@@ -132,7 +133,10 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-=======
-*venv*
 *__pycache__*
 *Zone.Identifier*
+*__pycache__*
+*migrations*
+*media*
+*mysqlData*
+*sweet.db*

@@ -141,7 +141,7 @@ def allowed_file(file):
         return (
             file.filename
             and '.' in file.filename
-            and file.filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
+            and file.filename.rsplit('.', 1)[1].lower() in current_app.config.get('ALLOWED_EXTENSIONS')
         )
 
 

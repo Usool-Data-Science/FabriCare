@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from apifairy import authenticate, body, response, other_responses
 
 from api import db
+from api.app import cache
 from api.models import Artist
 from api.schemas import ArtistSchema, DateTimePaginationSchema
 from api.decorators import paginated_response
@@ -36,25 +37,26 @@ def create_artist(data):
     if not allowed_file(artist_image):
         abort(400, description="Invalid mainImage file type.")
 
-    if artist_image.content_length > current_app.config['MAX_FILE_SIZE']:
+    if artist_image.content_length > current_app.config.get('MAX_FILE_SIZE'):
         abort(400, description="Image exceeds size limit.")
     
     # Ensure the storage directory exists
-    os.makedirs(current_app.config['MEDIA_PATH'], exist_ok=True)
+    os.makedirs(current_app.config.get('MEDIA_PATH'), exist_ok=True)
 
     # Generate file paths
     artist_image_filename = f"{uuid4().hex}_{secure_filename(artist_image.filename)}"
-    artist_image_path = os.path.join(current_app.config['MEDIA_PATH'], artist_image_filename)
+    artist_image_path = os.path.join(current_app.config.get('MEDIA_PATH'), artist_image_filename)
     
     try:
         # Save files to disk
         artist_image.save(artist_image_path)
         # Update file paths in the data dictionary
-        data['image'] = artist_image_path
+        data['image'] = artist_image_filename
 
         artist = Artist(**data)
         db.session.add(artist)
         db.session.commit()
+        cache.flush() # Clear the cache.
     except IOError as io_err:
         db.session.rollback()
         if os.path.exists(artist_image_path):
@@ -110,5 +112,6 @@ def delete_artist(id):
     artist = db.session.get(Artist, id)
     db.session.delete(artist)
     db.session.commit()
+    cache.flush() # Clear the cache.
 
     return {}, 204

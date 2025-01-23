@@ -20,9 +20,9 @@ oauth2_schema = OAuth2Schema()
 
 def token_response(token):
     headers = {}
-    if current_app.config['REFRESH_TOKEN_IN_COOKIE']:
+    if current_app.config.get('REFRESH_TOKEN_IN_COOKIE'):
         samesite = 'strict'
-        if current_app.config['USE_CORS']:  # pragma: no branch
+        if current_app.config.get('USE_CORS'):  # pragma: no branch
             samesite = 'none' if not current_app.debug else 'lax'
         headers['Set-Cookie'] = dump_cookie(
             'refresh_token', token.refresh_token,
@@ -31,7 +31,7 @@ def token_response(token):
     return {
         'access_token': token.access_token_jwt,
         'refresh_token': token.refresh_token
-        if current_app.config['REFRESH_TOKEN_IN_BODY'] else None,
+        if current_app.config.get('REFRESH_TOKEN_IN_BODY') else None,
     }, 200, headers
 
 
@@ -102,10 +102,10 @@ def revoke():
           description='Password reset email sent')
 def reset(args):
     """Request a password reset token"""
-    user = db.session.scalar(User.select().filter_by(email=args['email']))
+    user = db.session.query(User).filter_by(email=args['email']).first()
     if user is not None:
         reset_token = user.generate_reset_token()
-        reset_url = current_app.config['PASSWORD_RESET_URL'] + \
+        reset_url = current_app.config.get('PASSWORD_RESET_URL') + \
             '?token=' + reset_token
         send_email(args['email'], 'Reset Your Password', 'reset',
                    username=user.username, token=reset_token, url=reset_url)
@@ -133,13 +133,13 @@ def password_reset(args):
 @other_responses({404: 'Unknown OAuth2 provider'})
 def oauth2_authorize(provider):
     """Initiate OAuth2 authentication with a third-party provider"""
-    provider_data = current_app.config['OAUTH2_PROVIDERS'].get(provider)
+    provider_data = current_app.config.get('OAUTH2_PROVIDERS').get(provider)
     if provider_data is None:
         abort(404)
     session['oauth2_state'] = secrets.token_urlsafe(16)
     qs = urlencode({
         'client_id': provider_data['client_id'],
-        'redirect_uri': current_app.config['OAUTH2_REDIRECT_URI'].format(
+        'redirect_uri': current_app.config.get('OAUTH2_REDIRECT_URI').format(
             provider=provider),
         'response_type': 'code',
         'scope': ' '.join(provider_data['scopes']),
@@ -161,7 +161,7 @@ def oauth2_new(args, provider):
     client is running in an insecure environment such as a web browser, and
     cannot adequately protect the refresh token against unauthorized access.
     """
-    provider_data = current_app.config['OAUTH2_PROVIDERS'].get(provider)
+    provider_data = current_app.config.get('OAUTH2_PROVIDERS').get(provider)
     if provider_data is None:
         abort(404)
     if args['state'] != session.get('oauth2_state'):
@@ -171,7 +171,7 @@ def oauth2_new(args, provider):
         'client_secret': provider_data['client_secret'],
         'code': args['code'],
         'grant_type': 'authorization_code',
-        'redirect_uri': current_app.config['OAUTH2_REDIRECT_URI'].format(
+        'redirect_uri': current_app.config.get('OAUTH2_REDIRECT_URI').format(
             provider=provider),
     }, headers={'Accept': 'application/json'})
     if response.status_code != 200:

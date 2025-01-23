@@ -2,6 +2,7 @@ import json
 import stripe
 from flask import request, abort, Blueprint, jsonify
 from api import db
+from api.app import cache
 from api.app import endpoint_secret
 from api.auth import token_auth, role_required
 from api.decorators import paginated_response
@@ -34,17 +35,18 @@ def delete_orders(id):
     order = db.session.get(Order, id)
     db.session.delete(order)
     db.session.commit()
+    cache.flush() # Clear the cache.
 
     return {}
 
 
 @orders_bp.route('/webhooks/stripe', methods=['POST'])
 def stripe_webhook():
-    # payload = request.get_data(as_text=True)
-    # sig_header = request.headers.get('Stripe-Signature')
+    payload = request.get_data(as_text=True)
+    sig_header = request.headers.get('Stripe-Signature')
     event = None
-    payload = request.data
-    sig_header = request.headers['STRIPE_SIGNATURE']
+    # payload = request.data
+    # sig_header = request.headers['STRIPE_SIGNATURE']
 
     # Verify the webhook signature
     try:

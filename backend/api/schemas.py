@@ -55,6 +55,7 @@ def PaginatedCollection(schema, pagination_schema=StringPaginationSchema):
         pagination = ma.Nested(pagination_schema)
         data = ma.Nested(schema, many=True)
         extra_data = ma.Dict()
+        source = ma.String()
 
     PaginatedSchema.__name__ = 'Paginated{}'.format(schema.__class__.__name__)
     paginated_schema_cache[schema] = PaginatedSchema
@@ -69,9 +70,9 @@ class CartSchema(ma.SQLAlchemySchema):
 
     id = ma.auto_field(dump_only=True)
     quantity = ma.auto_field(required=True)
-
+    timestamp = ma.auto_field(dump_only=True)
     # Nested relationships
-    product = ma.Nested(lambda: ProductSchema(only=('id', 'quantity', 'title', 'price')), dump_only=True)
+    product = ma.Nested(lambda: ProductSchema(only=('id', 'quantity', 'title', 'price', 'mainImage')), dump_only=True)
     customer = ma.Nested(lambda: UserSchema(only=('id','username')), dump_only=True)
 
 
@@ -97,9 +98,6 @@ class UserSchema(ma.SQLAlchemySchema):
                              validate=validate.Length(max=120))
     password = ma.String(required=True, load_only=True,
                          validate=validate.Length(min=3))
-    # has_password = ma.Boolean(read_only=True)
-    first_seen = ma.auto_field(dump_only=True)
-    last_seen = ma.auto_field(dump_only=True)
     role = ma.String()
     # order_url = ma.URLFor('orders.all_user_orders', values={'id': '<id>'}, dump_only=True)
 
@@ -184,7 +182,6 @@ class ProductSchema(ma.SQLAlchemySchema):
             # Check if any item is a single comma-separated string
             if len(data['sizes']) == 1 and isinstance(data['sizes'][0], str) and ',' in data['sizes'][0]:
                 data['sizes'] = data['sizes'][0].split(',')
-        print("Data after preload: ", data)
         return data
 
 

@@ -1,9 +1,10 @@
+import os
 import stripe
 from flask import Blueprint, abort, jsonify
 from flask import current_app as app
 
 from api import db
-import sqlalchemy as sqla
+from api.app import cache
 from api.schemas import CartSchema, DateTimePaginationSchema
 from api.decorators import paginated_response
 from api.tokens import token_auth
@@ -67,6 +68,13 @@ def order():
     if not products:
         abort(404, 'Your cart is empty')
 
+    if os.environ.get('ENV') != 'local':
+        success_url = 'https://sweetlatex.com/order/success'
+        cancel_url = 'https://sweetlatex.com/order/cancel'
+    else:
+        success_url='http://localhost:3000/order/success'
+        cancel_url='http://localhost:3000/order/cancel'
+
     try:
         # Prepare line items for Stripe checkout session
         line_items = [
@@ -94,9 +102,10 @@ def order():
             line_items=line_items,
             payment_method_types=['card'],
             mode='payment',
-            success_url=app.config['FRONTEND_BASE_URL'] + '/order/success',
-            cancel_url=app.config['FRONTEND_BASE_URL'] + '/order/cancel',
+            success_url=success_url,
+            cancel_url=cancel_url,
         )
+        cache.flush() # Clear the cache.
 
         return jsonify({"session_url": checkout_session.url})
 
@@ -115,6 +124,7 @@ def remove_cart(id):
     cart = db.session.get(Cart, id)
     db.session.delete(cart)
     db.session.commit()
+    cache.flush() # Clear the cache.
 
     return {}
 
@@ -131,6 +141,7 @@ def remove_cart_product(id):
         
         db.session.delete(cart)
         db.session.commit()
+        cache.flush() # Clear the cache.
         return {}, 204
     except Exception as e:
         print("Error occurred:", e)

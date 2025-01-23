@@ -1,8 +1,25 @@
 import os
 from dotenv import load_dotenv
-
 load_dotenv()
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+db_host = os.getenv("DB_HOST")
+db_port = os.getenv("DB_PORT")
+db_user = os.getenv("DB_USER")
+db_password = os.getenv("DB_PASSWORD")
+db_name = os.getenv("DB_NAME")
+
+ssl_ca = os.getenv("SSL_CA")
+ssl_cert = os.getenv("SSL_CERT")
+ssl_key = os.getenv("SSL_KEY")
+
+DATABASE_URL = None
+
+if os.environ.get('ENV') != 'local':
+    # DATABASE_URL = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}?ssl_ca={ssl_ca}&ssl_cert={ssl_cert}&ssl_key={ssl_key}"
+    DATABASE_URL = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+else:
+    DATABASE_URL = os.environ.get('DATABASE_URL')
 
 def as_bool(value):
     if value:
@@ -10,7 +27,7 @@ def as_bool(value):
     return False
 
 class Config(object):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(BASE_DIR, 'sweet.db')
+    SQLALCHEMY_DATABASE_URI = DATABASE_URL or 'sqlite:///' + os.path.join(BASE_DIR, 'sweet.db')
     SECRET_KEY = os.environ.get('SECRET_KEY', 'sweetlatexscretkey!')
     FRONTEND_BASE_URL = os.environ.get('FRONTEND_BASE_URL', 'http://localhost:3000')
 
@@ -58,9 +75,9 @@ class Config(object):
         'http://localhost:3000/oauth2/{provider}/callback'
 
     # API documentation
-    APIFAIRY_TITLE = 'FabriCare API'
+    APIFAIRY_TITLE = 'SweetLatex API'
     APIFAIRY_VERSION = '1.0'
-    APIFAIRY_UI = os.environ.get('DOCS_UI', 'elements')
+    APIFAIRY_UI = os.environ.get('DOCS_UI', 'rapidoc')
     APIFAIRY_TAGS = ['tokens', 'users', 'carts', 'artists', 'products']
 
     # email options
@@ -70,7 +87,7 @@ class Config(object):
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER=os.environ.get('MAIL_DEFAULT_SENDER',
-                                       'donotreply@fabricare.com')
+                                       'donotreply@sweetlatex.com')
     CAROUSEL_SIZE=int('3')
     MEDIA_PATH=os.path.join(BASE_DIR, 'media')
     MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB

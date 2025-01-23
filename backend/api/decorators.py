@@ -1,13 +1,14 @@
-from functools import wraps
-from flask import abort
-from api.auth import token_auth
 from apifairy import arguments, response
+from flask import abort, jsonify, request
+from functools import wraps
 import sqlalchemy as sqla
-from api.app import db
-from api.schemas import StringPaginationSchema, PaginatedCollection
-from api.models import Cart, Product
+import json
 
-# def paginated_response(schema, max_limit=25, order_by=None,
+from api.schemas import StringPaginationSchema, PaginatedCollection
+from api.app import cache
+from api.app import db
+
+# def paginated_response(schema, max_limit=25, order_by=None, 
 #                        order_direction='asc',
 #                        pagination_schema=StringPaginationSchema):
 #     def inner(f):
@@ -15,32 +16,22 @@ from api.models import Cart, Product
 #         def paginate(*args, **kwargs):
 #             args = list(args)
 #             pagination = args.pop(-1)
-#             select_query = f(*args, **kwargs)
+#             result = f(*args, **kwargs)
+
+#             # Handle query and extra data if returned as a tuple
+#             if isinstance(result, tuple):
+#                 select_query, extra_data = result
+#             else:
+#                 select_query = result
+#                 extra_data = {}
+
 #             if order_by is not None:
 #                 o = order_by.desc() if order_direction == 'desc' else order_by
 #                 select_query = select_query.order_by(o)
 
-#             # Total count of items
 #             count = db.session.scalar(sqla.select(
 #                 sqla.func.count()).select_from(select_query.subquery()))
 
-#             # Compute the total_price before pagination
-#             # total_price_query = sqla.select(
-#             #     sqla.func.sum(Cart.quantity * Cart.product.price)
-#             # ).select_from(select_query.subquery())
-#             # total_price = db.session.scalar(total_price_query) or 0  # Default to 0 if None
-
-#             # Correct query to compute the total price of products in the cart
-#             # Adjust the total_price_query to include a filter for the current user
-#             total_price_query = sqla.select(
-#                 sqla.func.sum(Cart.quantity * Product.price)
-#             ).join(Product, Cart.product_id == Product.id) #.filter(Cart.customer_id == current_user().id)
-
-#             total_price = db.session.scalar(total_price_query) or 0
-
-
-
-#             # Handle pagination
 #             limit = pagination.get('limit', max_limit)
 #             offset = pagination.get('offset')
 #             after = pagination.get('after')
@@ -67,9 +58,10 @@ from api.models import Cart, Product
 
 #                 query = select_query.limit(limit).offset(offset)
 
-#             # Fetch data for the current page
 #             data = db.session.scalars(query).all()
-#             return {
+
+#             # Construct the response
+#             response = {
 #                 'data': data,
 #                 'pagination': {
 #                     'offset': offset,
@@ -77,65 +69,12 @@ from api.models import Cart, Product
 #                     'count': len(data),
 #                     'total': count,
 #                 },
-#                 'total_price': total_price  # Include total_price in the response
 #             }
 
-#         # wrap with APIFairy's arguments and response decorators
-#         return arguments(pagination_schema)(response(PaginatedCollection(
-#             schema, pagination_schema=pagination_schema))(paginate))
+#             # Include extra data if provided
+#             response.update(extra_data)
 
-#     return inner
-
-#DEFAULT
-# def paginated_response(schema, max_limit=25, order_by=None,
-#                        order_direction='asc',
-#                        pagination_schema=StringPaginationSchema):
-#     def inner(f):
-#         @wraps(f)
-#         def paginate(*args, **kwargs):
-#             args = list(args)
-#             pagination = args.pop(-1)
-#             select_query = f(*args, **kwargs)
-#             if order_by is not None:
-#                 o = order_by.desc() if order_direction == 'desc' else order_by
-#                 select_query = select_query.order_by(o)
-
-#             count = db.session.scalar(sqla.select(
-#                 sqla.func.count()).select_from(select_query.subquery()))
-
-#             limit = pagination.get('limit', max_limit)
-#             offset = pagination.get('offset')
-#             after = pagination.get('after')
-#             if limit > max_limit:
-#                 limit = max_limit
-#             if after is not None:
-#                 if offset is not None or order_by is None:  # pragma: no cover
-#                     abort(400)
-#                 if order_direction != 'desc':
-#                     order_condition = order_by > after
-#                     offset_condition = order_by <= after
-#                 else:
-#                     order_condition = order_by < after
-#                     offset_condition = order_by >= after
-#                 query = select_query.limit(limit).filter(order_condition)
-#                 offset = db.session.scalar(sqla.select(
-#                     sqla.func.count()).select_from(select_query.filter(
-#                         offset_condition).subquery()))
-#             else:
-#                 if offset is None:
-#                     offset = 0
-#                 if offset < 0 or (count > 0 and offset >= count) or limit <= 0:
-#                     abort(400)
-
-#                 query = select_query.limit(limit).offset(offset)
-
-#             data = db.session.scalars(query).all()
-#             return {'data': data, 'pagination': {
-#                 'offset': offset,
-#                 'limit': limit,
-#                 'count': len(data),
-#                 'total': count,
-#             }}
+#             return response
 
 #         # wrap with APIFairy's arguments and response decorators
 #         return arguments(pagination_schema)(response(PaginatedCollection(
@@ -143,17 +82,34 @@ from api.models import Cart, Product
 
 #     return inner
 
-def paginated_response(schema, max_limit=25, order_by=None, 
+
+### GPT SOLUTION
+
+def paginated_response(schema, max_limit=25, order_by=None,
                        order_direction='asc',
-                       pagination_schema=StringPaginationSchema):
-    def inner(f):
-        @wraps(f)
+                       pagination_schema=StringPaginationSchema,
+                       cache_ttl=1000):  # Allow configurable cache TTL
+
+    def inner(route_function):
+        @wraps(route_function)
         def paginate(*args, **kwargs):
             args = list(args)
             pagination = args.pop(-1)
-            result = f(*args, **kwargs)
+            response = None
 
-            # Handle query and extra data if returned as a tuple
+            # Generate a unique cache key based on the request URL and pagination parameters
+            cache_key = f"{request.path}:{json.dumps(request.args, sort_keys=True)}"
+
+            # Check if response exists in cache
+            response = cache.get(cache_key)
+            if response:
+                response['source'] = 'cache'
+                return response
+
+            # If response is not cached, execute the original route function
+            result = route_function(*args, **kwargs)
+
+            # Process the result (pagination logic)
             if isinstance(result, tuple):
                 select_query, extra_data = result
             else:
@@ -164,40 +120,37 @@ def paginated_response(schema, max_limit=25, order_by=None,
                 o = order_by.desc() if order_direction == 'desc' else order_by
                 select_query = select_query.order_by(o)
 
-            count = db.session.scalar(sqla.select(
-                sqla.func.count()).select_from(select_query.subquery()))
+            count = db.session.scalar(
+                sqla.select(sqla.func.count()).select_from(select_query.subquery())
+            )
 
             limit = pagination.get('limit', max_limit)
             offset = pagination.get('offset')
             after = pagination.get('after')
             if limit > max_limit:
                 limit = max_limit
+
             if after is not None:
-                if offset is not None or order_by is None:  # pragma: no cover
+                if offset is not None or order_by is None:
                     abort(400)
-                if order_direction != 'desc':
-                    order_condition = order_by > after
-                    offset_condition = order_by <= after
-                else:
-                    order_condition = order_by < after
-                    offset_condition = order_by >= after
+                order_condition = order_by < after if order_direction == 'desc' else order_by > after
                 query = select_query.limit(limit).filter(order_condition)
-                offset = db.session.scalar(sqla.select(
-                    sqla.func.count()).select_from(select_query.filter(
-                        offset_condition).subquery()))
+                offset = db.session.scalar(
+                    sqla.select(sqla.func.count())
+                        .select_from(select_query.filter(order_condition).subquery())
+                )
             else:
                 if offset is None:
                     offset = 0
                 if offset < 0 or (count > 0 and offset >= count) or limit <= 0:
                     abort(400)
-
                 query = select_query.limit(limit).offset(offset)
 
             data = db.session.scalars(query).all()
 
-            # Construct the response
+            # Construct the response as a dictionary
             response = {
-                'data': data,
+                'data': schema.dump(data, many=True),
                 'pagination': {
                     'offset': offset,
                     'limit': limit,
@@ -205,13 +158,17 @@ def paginated_response(schema, max_limit=25, order_by=None,
                     'total': count,
                 },
             }
-
-            # Include extra data if provided
             response.update(extra_data)
+            response['source'] = 'db'  # Add source info for uncached responses
 
-            return response
+            # Cache the response for a specific TTL
 
-        # wrap with APIFairy's arguments and response decorators
+            cache.set(cache_key, json.dumps(response), expire=cache_ttl)
+
+            # Return the response as a dict, which will be processed by @response decorator
+            response['data'] = data
+            return response  # Return as a dictionary instead of jsonify
+
         return arguments(pagination_schema)(response(PaginatedCollection(
             schema, pagination_schema=pagination_schema))(paginate))
 
