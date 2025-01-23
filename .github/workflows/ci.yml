@@ -1,0 +1,34 @@
+name: Deploy to DigitalOcean Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the repository if you want the GitHub Actions runner to clone the repository locally during the CI/CD workflow. However, this isn't necessary because the server already pulls the repository using git pull in the SSH commands block.
+    # - name: Checkout code
+    #   uses: actions/checkout@v3
+
+    # Set up SSH key, but we skipped it here because i already connect both the server and github
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{secrets.SWEETLATEX_GITHUB_ACTIONS_KEY}}
+
+    # Deploy changes
+    - name: Deploy changes to server
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{secrets.SWEETLATEX_USERNAME}}@${{secrets.SWEETLATEX_IP}} << 'EOF'
+        cd ~/sweetLatex
+        git fetch origin main
+        git reset --hard origin/main
+        cd frontend/
+        sudo kill $(sudo lsof -t -i :80)
+        docker compose down
+        npm run deploy
+        EOF

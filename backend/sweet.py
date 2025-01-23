@@ -41,7 +41,7 @@ if not app.debug:
         os.mkdir('logs')
 
     # File Error Logging
-    file_handler = RotatingFileHandler('logs/sweetlatex.log', maxBytes=10240, backupCount=10)
+    file_handler = RotatingFileHandler('logs/fabricare.log', maxBytes=10240, backupCount=10)
     file_handler.setFormatter(logging.Formatter(
         '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
     ))

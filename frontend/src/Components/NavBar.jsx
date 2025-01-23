@@ -26,7 +26,7 @@ const NavBar = ({ search, loginButton }) => {
     return (
         <div className="mb-4">
             {/* Logo */}
-            <div className="absolute top-1 sm:top-2 lg:top-3 xl:top-5 z-50 left-4 sm:left-8 lg:left-16 xl:left-24">
+            <div className="absolute top-2 z-50 left-4 sm:left-8 w-16 h-24 rounded-full">
                 <a href="/">
                     <img src="/images/Fabricare.png" alt="Brand logo" className="h-15 w-32 rounded-full" />
                 </a>
@@ -48,7 +48,7 @@ const NavBar = ({ search, loginButton }) => {
                         </div>
                     )}
 
-                    <div className="flex gap-4 pt-3">
+                    <div className={`flex gap-4 ${user ? `pt-3` : `pt-0`}`}>
                         <Link to="#">
                             <span className="text-red-600 text-sm font-courier hover:underline hover:underline-offset-2">
                                 Presale
@@ -117,7 +117,7 @@ const NavBar = ({ search, loginButton }) => {
                     {/* Login Button */}
                     {!user && loginButton && (
                         <Link to="/login">
-                            <span className="text-green-300 font-myriad pr-6 hover:underline hover:underline-offset-2">
+                            <span className="text-green-300 text-sm font-courier pr-6 hover:underline hover:underline-offset-2">
                                 Login
                             </span>
                         </Link>

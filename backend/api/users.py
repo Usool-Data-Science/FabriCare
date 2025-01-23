@@ -32,6 +32,7 @@ def new(args):
 @paginated_response(users_schema, order_by=User.timestamp,
                     order_direction='desc',
                     pagination_schema=DateTimePaginationSchema)
+@role_required('admin')
 def all():
     """Retrieve all users"""
     return db.session.query(User).filter(User.role != 'admin')
@@ -50,6 +51,7 @@ def get(id):
 @authenticate(token_auth)
 @response(user_schema)
 @other_responses({404: 'User not found'})
+@role_required('admin')
 def get_by_username(username):
     """Retrieve a user by username"""
     return db.session.query(User).filter_by(username=username).one() or \

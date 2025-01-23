@@ -82,12 +82,12 @@ def order():
         abort(404, 'Your cart is empty')
 
     success_url = (
-        'https://sweetlatex.com/order/success'
+        'https://fabricare.com/order/success'
         if os.environ.get('ENV') != 'local'
         else 'http://localhost:3000/order/success'
     )
     cancel_url = (
-        'https://sweetlatex.com/order/cancel'
+        'https://fabricare.com/order/cancel'
         if os.environ.get('ENV') != 'local'
         else 'http://localhost:3000/order/cancel'
     )

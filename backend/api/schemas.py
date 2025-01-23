@@ -67,6 +67,7 @@ class CartSchema(ma.SQLAlchemySchema):
         model = Cart
         include_fk = True
         ordered = True
+        name='CartSchema'
 
     id = ma.auto_field(dump_only=True)
     quantity = ma.auto_field(required=True)
@@ -144,8 +145,6 @@ class ArtistSchema(ma.SQLAlchemySchema):
 
     id = ma.auto_field(dump_only=True)
     name = ma.String(required=True)
-    # first_name = ma.String(required=True)
-    # last_name = ma.String(required=True)
     image = ma.Raw(type='file')
     description = ma.String(required=True)
     website = ma.String(requied=True, validate=validate.Length(min=10, max=500))
@@ -190,15 +189,16 @@ class OrderSchema(ma.SQLAlchemySchema):
         model = Order
         include_fk = True
         ordered = True
+        name='OrderSchema'
 
     id = ma.auto_field(dump_only=True)
     # quantity = ma.auto_field(required=True)  # Optional
     price = ma.auto_field(required=True)
     status = ma.auto_field(required=True, validate=validate.Length(min=1, max=100))
     payment_id = ma.auto_field(required=True, validate=validate.Length(min=1, max=100))
-    products = ma.Nested(ProductSchema, many=True, dump_only=True)  # Correct declaration
     timestamp = ma.auto_field(dump_only=True)
     # Nested relationships
+    products = ma.Nested(ProductSchema, many=True, dump_only=True)
     customer = ma.Nested(UserSchema, dump_only=True)
 
 
