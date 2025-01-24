@@ -23,7 +23,8 @@ def new(args):
     user = User(**args)
     db.session.add(user)
     db.session.commit()
-    cache.flush() # Clear the cache.
+    if cache is not None:
+        cache.flush()
     return user
 
 
@@ -79,7 +80,8 @@ def put(data):
         abort(400)
     user.update(data)
     db.session.commit()
-    cache.flush() # Clear the cache.
+    if cache is not None:
+        cache.flush()
     return user
 
 
@@ -91,5 +93,6 @@ def delete_user(id):
     user = db.session.get(User, id)
     db.session.delete(user)
     db.session.commit()
-    cache.flush() # Clear the cache.
+    if cache is not None:
+        cache.flush()
     return {}
