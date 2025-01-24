@@ -28,7 +28,7 @@ export default function CartProvider({ children }) {
                         setCartsPagination(pag);
                         return response;
                     } else {
-                        flash && flash(response.body?.message || "An unexpected error occurred", 'error');
+                        flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
                         return null;
                     }
                 } catch (error) {
@@ -82,7 +82,7 @@ export default function CartProvider({ children }) {
                 flash && flash('Item added to cart', 'success');
                 return response;
             } else {
-                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
             }
         }
     }, [user, api, flash]);
@@ -97,7 +97,7 @@ export default function CartProvider({ children }) {
                 flash && flash(`Successfully deleted cart ${cartId}`, 'success');
                 fetchPaginatedCarts(cartsPagination.limit, cartsPagination.offset); // Re-fetch carts
             } else {
-                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
             }
         }
     }, [api, flash, fetchPaginatedCarts, cartsPagination.limit, cartsPagination.offset]);
@@ -112,7 +112,7 @@ export default function CartProvider({ children }) {
                 // Update the user's cart after removing the product
                 fetchPagUserCart(userCartPag.limit, userCartPag.offset);
             } else {
-                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
             }
         }
     }, [api, flash, fetchPagUserCart, userCartPag.limit, userCartPag.offset]);
