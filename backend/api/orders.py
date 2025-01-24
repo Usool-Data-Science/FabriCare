@@ -54,7 +54,8 @@ def delete_orders(id):
 
     db.session.delete(order)
     db.session.commit()
-    cache.flush()  # Clear the cache
+    if cache is not None:
+        cache.flush()
 
     return {}, 204
 

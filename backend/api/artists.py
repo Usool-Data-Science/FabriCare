@@ -72,7 +72,8 @@ def create_artist(data):
         db.session.commit()
 
         # Clear the cache to reflect new data
-        cache.flush()
+        if cache is not None:
+            cache.flush()
 
     except IOError as io_err:
         # Handle file I/O errors and clean up
@@ -168,6 +169,7 @@ def delete_artist(id):
     db.session.commit()
 
     # Clear the cache to reflect the deletion
-    cache.flush()
+    if cache is not None:
+        cache.flush()
 
     return {}, 204

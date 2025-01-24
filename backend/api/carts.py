@@ -118,7 +118,8 @@ def order():
             success_url=success_url,
             cancel_url=cancel_url,
         )
-        cache.flush()
+        if cache is not None:
+            cache.flush()
         return jsonify({"session_url": checkout_session.url})
 
     except KeyError as e:
@@ -135,7 +136,8 @@ def remove_cart(id):
     cart = db.session.get(Cart, id)
     db.session.delete(cart)
     db.session.commit()
-    cache.flush()
+    if cache is not None:
+        cache.flush()
     return {}
 
 
@@ -152,7 +154,8 @@ def remove_cart_product(id):
 
         db.session.delete(cart)
         db.session.commit()
-        cache.flush()
+        if cache is not None:
+            cache.flush()
         return {}, 204
     except Exception as e:
         abort(500, f"Database error: {e}")

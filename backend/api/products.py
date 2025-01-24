@@ -84,7 +84,8 @@ def new_sweater(data):
         product = Product(**data)
         db.session.add(product)
         db.session.commit()
-        cache.flush() # Clear the cache.
+        if cache is not None:
+            cache.flush()
 
     except IOError as io_err:
         db.session.rollback()
@@ -185,7 +186,8 @@ def update_product(data, id):
         # Commit the updates
         product.update(data)
         db.session.commit()
-        cache.flush() # Clear the cache.
+        if cache is not None:
+            cache.flush()
 
     except IOError as io_err:
         db.session.rollback()
@@ -258,5 +260,6 @@ def delete_product(id):
     product = db.session.get(Product, id) or abort(404)
     db.session.delete(product)
     db.session.commit()
-    cache.flush() # Clear the cache.
+    if cache is not None:
+        cache.flush()
     return {}, 204
