@@ -37,9 +37,9 @@ const HealthPage = () => {
                 {isLoading &&
                     <div className="flex w-96 flex-col gap-4">
                         <div className="skeleton h-32 w-full"></div>
-                        <div className="skeleton h-4 w-28"></div>
                         <div className="skeleton h-4 w-full"></div>
                         <div className="skeleton h-4 w-full"></div>
+                        <div className="skeleton self-center h-4 w-28"></div>
 
                         <p className="py-8 inline">Please wait while we wake our API from sleep, this takes usually 50 secs</p>
                         <span className="loading loading-infinity loading-lg self-center"></span>
