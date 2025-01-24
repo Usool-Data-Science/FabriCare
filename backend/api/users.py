@@ -3,8 +3,9 @@ from flask import Blueprint, abort
 from apifairy import authenticate, body, response
 
 from api import db
+from api.app import cache
 from api.models import User
-from api.schemas import UserSchema, UpdateUserSchema, EmptySchema
+from api.schemas import UserSchema, UpdateUserSchema, DateTimePaginationSchema
 from api.auth import token_auth, role_required
 from api.decorators import paginated_response
 
@@ -22,15 +23,19 @@ def new(args):
     user = User(**args)
     db.session.add(user)
     db.session.commit()
+    cache.flush() # Clear the cache.
     return user
 
 
 @users_bp.route('/users', methods=['GET'], strict_slashes=False)
 @authenticate(token_auth)
-@paginated_response(users_schema)
+@paginated_response(users_schema, order_by=User.timestamp,
+                    order_direction='desc',
+                    pagination_schema=DateTimePaginationSchema)
+@role_required('admin')
 def all():
     """Retrieve all users"""
-    return db.session.query(User)
+    return db.session.query(User).filter(User.role != 'admin')
 
 
 @users_bp.route('/users/<int:id>', methods=['GET'], strict_slashes=False)
@@ -46,6 +51,7 @@ def get(id):
 @authenticate(token_auth)
 @response(user_schema)
 @other_responses({404: 'User not found'})
+@role_required('admin')
 def get_by_username(username):
     """Retrieve a user by username"""
     return db.session.query(User).filter_by(username=username).one() or \
@@ -73,6 +79,7 @@ def put(data):
         abort(400)
     user.update(data)
     db.session.commit()
+    cache.flush() # Clear the cache.
     return user
 
 
@@ -84,4 +91,5 @@ def delete_user(id):
     user = db.session.get(User, id)
     db.session.delete(user)
     db.session.commit()
+    cache.flush() # Clear the cache.
     return {}

@@ -104,4 +104,8 @@ webargs==8.4.0
 werkzeug==3.0.3
     # via flask
 flask-migrate
+Flask-Limiter[redis]
 stripe
+redis
+cryptography
+pymysql

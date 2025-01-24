@@ -103,6 +103,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+.env
 .venv
 env/
 venv/
@@ -133,7 +134,10 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-=======
-*venv*
 *__pycache__*
 *Zone.Identifier*
+*__pycache__*
+*migrations*
+*media*
+*mysqlData*
+*sweet.db*

@@ -27,7 +27,7 @@ def sqlalchemy_integrity_error(error):  # pragma: no cover
 
 @errors_bp.app_errorhandler(SQLAlchemyError)
 def sqlalchemy_error(error):  # pragma: no cover
-    if current_app.config['DEBUG'] is True:
+    if current_app.config.get('DEBUG') is True:
         return {
             'code': InternalServerError.code,
             'message': 'Database error',

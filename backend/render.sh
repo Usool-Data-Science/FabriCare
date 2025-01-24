@@ -1,4 +1,6 @@
 #!/bin/bash
+pip install -r requirements.txt
+pip install gunicorn
 if [ -d "migrations" ]; then
     echo "Migrations folder found. Running flask db upgrade head..."
     while true; do
@@ -26,4 +28,3 @@ else
         sleep 5
     done
 fi
-exec gunicorn -b :5000 --workers 3 --access-logfile - --error-logfile - sweet:app

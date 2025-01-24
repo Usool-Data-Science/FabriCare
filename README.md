@@ -75,12 +75,12 @@ This approach utilizes the Python WSGI application server with SQLite for develo
      ```bash
      pip install -r requirements.txt
      ```
-   - Initialize and populate the database:
+   - Rename .env.example to .env and instantiate the database:
      ```bash
      flask db init && flask db migrate -m "Initialize Database" && flask db upgrade
      flask fakes create 5
      ```
-     **Note:** Ensure the `ENV` variable in the `.env` file is set to `local`.
+     **Note:** Ensure the `ENV` variable in the `.env` file is set to `local` and other keys are provided as required. For stripe input your testing key.
 
 4. **Start the Backend Server**
    - Run the application:
