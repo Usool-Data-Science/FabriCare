@@ -45,6 +45,7 @@ class Config:
     )
     SECRET_KEY = os.environ.get('SECRET_KEY', 'fabricarescretkey!')
     FRONTEND_BASE_URL = os.environ.get('FRONTEND_BASE_URL', 'http://localhost:3000')
+    USE_CACHE = as_bool(os.environ.get('USE_CACHE'))
 
     # Security options
     DISABLE_AUTH = as_bool(os.environ.get('DISABLE_AUTH'))

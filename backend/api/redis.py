@@ -11,9 +11,12 @@ from uuid import uuid4
 import json
 import os
 
+from config import as_bool
+
 
 redis_host: str = os.environ.get('REDIS_HOST')
 redis_port: str = os.environ.get('REDIS_PORT')
+use_cache = as_bool(os.environ.get('USE_CACHE'))
 
 def count_calls(method: Callable) -> Callable:
     """Track the number of calls to a redis method.
@@ -93,13 +96,16 @@ class Cache:
 
     def __init__(self) -> None:
         """Instantiates the cache object."""
-        if os.environ.get('ENV') != 'local':
+        if os.environ.get('ENV') != 'local' and use_cache:
             pool = ConnectionPool(host=redis_host, port=redis_port, decode_responses=True)
             self._redis = Redis(connection_pool=pool)
-        else:
+            self._redis.flushdb(True)
+        elif os.environ.get('ENV') == 'local' and use_cache:
             pool = ConnectionPool(decode_responses=True)
             self._redis = Redis(connection_pool=pool)
-        self._redis.flushdb(True)
+            self._redis.flushdb(True)
+        else:
+            self._redis = None
 
     @count_calls
     @call_history

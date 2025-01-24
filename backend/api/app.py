@@ -18,7 +18,9 @@ cors = CORS()
 mail = Mail()
 migrate = Migrate()
 apifairy = APIFairy()
-cache = Cache()
+cache = None
+if os.environ.get('USE_CACHE') == 'True':
+    cache = Cache()
 
 
 # Stripe secret key and endpoint secret
@@ -71,6 +73,9 @@ def create_app(config_class=Config):
 
     from api.orders import orders_bp
     app.register_blueprint(orders_bp, url_prefix='/api')
+
+    if not cache:
+        print("WARNING: Redis caching is disabled for this application!")
 
     # Define shell context for Flask CLI
     @app.shell_context_processor

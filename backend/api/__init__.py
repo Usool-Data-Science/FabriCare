@@ -44,6 +44,7 @@ environment variables that are currently used:
 | `RESET_TOKEN_MINUTES` | `15` | The number of minutes a reset token is valid for. |
 | `PASSWORD_RESET_URL` | `http://localhost:3000/reset` | The URL that will be used in password reset links. |
 | `USE_CORS` | `yes` | Whether to allow cross-origin requests. If allowed, CORS support can be configured or customized with options provided by the Flask-CORS extension. |
+| `USE_CACHE` | `yes` | Whether to allow caching of api responses using redis. |
 | `DOCS_UI` | `rapidoc` | The UI library to use for the documentation. Allowed values are `swagger_ui`, `redoc`, `rapidoc` and `elements`. |
 | `MAIL_SERVER` | `localhost` | The mail server to use for sending emails. |
 | `MAIL_PORT` | `25` | The port to use for sending emails. |
