@@ -19,7 +19,7 @@ const ProductProvider = ({ children }) => {
                 setProductPagination(pag);
                 return response;
             } else {
-                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
                 return null;
             }
         } catch (error) {
@@ -37,7 +37,7 @@ const ProductProvider = ({ children }) => {
             if (response.ok) {
                 return response.body;
             } else {
-                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
             }
         } catch (error) {
             console.error(`Error fetching product ${productId}:`, error);
@@ -60,7 +60,7 @@ const ProductProvider = ({ children }) => {
                 errorMessage.replace('Unauthorized', 'Your session timed out, please login again!')
                 flash && flash(errorMessage, 'error');
             } else {
-                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
             }
             return response;
         }
@@ -94,7 +94,7 @@ const ProductProvider = ({ children }) => {
                 flash && flash(`Successfully deleted product ID: ${productId}`, 'success');
                 fetchPaginatedProducts(productPagination.limit, productPagination.offset); // Re-fetch products
             } else {
-                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
             }
         }
     }, [api, flash, fetchPaginatedProducts, productPagination]);

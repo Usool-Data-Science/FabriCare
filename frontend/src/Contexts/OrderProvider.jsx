@@ -24,7 +24,7 @@ const OrderProvider = ({ children }) => {
                         setOrdersPagination(pag);
                         return response;
                     } else {
-                        flash && flash(response.body?.message || "An unexpected error occurred", 'error');
+                        flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
                         return null;
                     }
                 } catch (error) {
@@ -50,7 +50,7 @@ const OrderProvider = ({ children }) => {
                 flash && flash(`Successfully deleted order ${orderId}`, 'success');
                 fetchPaginatedOrders(ordersPagination.limit, ordersPagination.offset); // Re-fetch carts
             } else {
-                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
             }
         }
     }, [api, flash, fetchPaginatedOrders, ordersPagination.limit, ordersPagination.offset]);
