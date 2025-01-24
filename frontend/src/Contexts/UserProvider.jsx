@@ -34,18 +34,17 @@ export default function UserProvider({ children }) {
         (async () => {
             setLoadingUser(true);
             if (api.isAuthenticated()) {
-                // if (!user) {
-                const response = await api.get('/me');
-                if (response.ok) {
-                    setUser(response.body);
-                    setAdminUser(response.body?.role === 'admin');
-                    fetchPaginatedUsers();
-
-                } else {
-                    setUser(null);
-                    setAdminUser(false);
+                if (window.location.pathname !== '/') {
+                    const response = await api.get('/me');
+                    if (response.ok) {
+                        setUser(response.body);
+                        setAdminUser(response.body?.role === 'admin');
+                        fetchPaginatedUsers();
+                    } else {
+                        setUser(null);
+                        setAdminUser(false);
+                    }
                 }
-                // }
             } else {
                 setUser(null);
                 setAdminUser(false);
