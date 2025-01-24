@@ -32,6 +32,7 @@
 8. **Comprehensive Documentation**: Utilizes Marshmallow and APIFairy for consistent API documentation.
 9. **Role-Based Authentication**: Ensures secure access based on user roles.
 10. **Dummy Data Creation**: One-command setup for populating the database with test data.
+11. **Flexible caching**: One environmental variable to toggle between the use of redis cache or otherwise.
 
 ### DevOps
 1. **Docker Compose**: Orchestrates services including frontend, backend, Redis, MySQL, and Nginx.
