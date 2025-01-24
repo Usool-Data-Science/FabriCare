@@ -120,7 +120,7 @@ def create_app(config_class=Config):
         return response
 
     # Define a health check route
-    @app.route('/health')
+    @app.route('/api/health')
     def health_check():
         """
         Provide a health check endpoint.

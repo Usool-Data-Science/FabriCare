@@ -9,7 +9,7 @@ export default class SweetLatexApiClient {
 
     async request(options) {
         let response = await this.requestInternal(options);
-        if (response.status === 401 && options.url !== '/tokens') {
+        if (response.status === 401 && options.url !== '/tokens' && options.url !== '/health') {
             const refreshResponse = await this.put('/tokens', {
                 access_token: localStorage.getItem('accessToken'),
             });

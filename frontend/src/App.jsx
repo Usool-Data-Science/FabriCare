@@ -15,6 +15,7 @@ import SuccessPage from "./Pages/SuccessPage"
 import CancelPage from "./Pages/CancelPage"
 import ResetRequestPage from "./Pages/ResetRequestPage"
 import ResetPage from "./Pages/ResetPage"
+import HealthPage from "./Pages/HealthPage"
 
 
 function App() {
@@ -24,7 +25,8 @@ function App() {
       <ProviderStore>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
+          <Route path="/" element={<PublicRoute><HealthPage /></PublicRoute>} />
+          <Route path="/landing" element={<PublicRoute><LandingPage /></PublicRoute>} />
           <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><NewUser /></PublicRoute>} />
           <Route path="/reset-request" element={<PublicRoute><ResetRequestPage /></PublicRoute>} />

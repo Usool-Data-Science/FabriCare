@@ -44,7 +44,7 @@ export default function CartProvider({ children }) {
     // Get current user Cart
     const fetchPagUserCart = useCallback(async (limit = 5, offset = 0,) => {
         setIsCartLoading(true); // Set loading state
-        if (!adminUser && api.isAuthenticated()) {
+        if (user && !adminUser) {
             try {
                 const cartResponse = await api.get('/me/carts', { limit, offset });
                 if (cartResponse.ok) {

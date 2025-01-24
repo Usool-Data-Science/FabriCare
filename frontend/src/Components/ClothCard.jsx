@@ -13,7 +13,7 @@ const ClothCard = ({ id, imgSrc, clothName, deadLine, daysLeft, artist }) => {
             <div className="flex flex-col flex-grow gap-4 justify-center">
                 {/* Name and button */}
                 <div className="flex justify-between items-center gap-8">
-                    <p className="text-gray-100 text-xl sm:text-2xl truncate">{clothName} X <span className="truncate">{artist}</span></p>
+                    <p className="text-gray-100 text-xl sm:text-2xl">{clothName} X <span className="truncate">{artist}</span></p>
                     <Link
                         to={`/sales/${id}`}
                         className="hidden sm:block border-2 border-gray-100 py-1 px-3 text-gray-100 text-xs sm:text-sm lg:text-lg hover:bg-gray-500 whitespace-nowrap"
