@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from hashlib import md5
 import secrets
 from time import time
@@ -377,6 +377,7 @@ class Product(Updateable, BaseModel):
             String: The product's title
         """
         return '<Product: {}>'.format(self.title)
+
 
 class Order(BaseModel):
     """Represents a customer's order in the system."""
