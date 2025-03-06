@@ -11,12 +11,9 @@ from uuid import uuid4
 import json
 import os
 
-from config import as_bool
-
 
 redis_host: str = os.environ.get('REDIS_HOST')
 redis_port: str = os.environ.get('REDIS_PORT')
-use_cache = as_bool(os.environ.get('USE_CACHE'))
 
 def count_calls(method: Callable) -> Callable:
     """Track the number of calls to a redis method.
@@ -96,16 +93,13 @@ class Cache:
 
     def __init__(self) -> None:
         """Instantiates the cache object."""
-        if os.environ.get('ENV') != 'local' and use_cache:
+        if os.environ.get('ENV') != 'local':
             pool = ConnectionPool(host=redis_host, port=redis_port, decode_responses=True)
             self._redis = Redis(connection_pool=pool)
-            self._redis.flushdb(True)
-        elif os.environ.get('ENV') == 'local' and use_cache:
+        else:
             pool = ConnectionPool(decode_responses=True)
             self._redis = Redis(connection_pool=pool)
-            self._redis.flushdb(True)
-        else:
-            self._redis = None
+        self._redis.flushdb(True)
 
     @count_calls
     @call_history
@@ -138,7 +132,8 @@ class Cache:
 
         if cache_response:
             cache_response = json.loads(cache_response)
-            if 'timestamp' in cache_response['data'][0].keys():
+            data = cache_response.get('data')
+            if data and 'timestamp' in data[0].keys():
                 # Convert the timestamp string to datetime
                 for obj in cache_response['data']:
                     obj['timestamp'] = dt.fromisoformat(obj['timestamp'])

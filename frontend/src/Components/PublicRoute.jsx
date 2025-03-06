@@ -7,12 +7,13 @@ const PublicRoute = ({ children }) => {
     if (loadingUser) {
         return <span className="loading loading-ring loading-lg"></span>
     }
+
     if (user) {
-        if (adminUser) {
-            return <Navigate to='/admin' />;
-        }
-        return <Navigate to='/home' />;
+        // Redirect to the intended page or default pages
+        const nextPage = location.state?.next || (adminUser ? "/admin" : "/home");
+        return <Navigate to={nextPage} replace />;
     }
+
     // Allow unauthenticated users to access the route
     return children;
 };

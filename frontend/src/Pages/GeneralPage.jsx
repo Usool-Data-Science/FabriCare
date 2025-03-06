@@ -1,7 +1,7 @@
 import ClothCard from "../Components/ClothCard";
 import { motion } from "framer-motion";
 import { useApi } from "../Contexts/ApiProvider";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 
 const GeneralPage = ({ products }) => {
     const api = useApi();
@@ -24,16 +24,14 @@ const GeneralPage = ({ products }) => {
                             <ClothCard
                                 id={product.id}
                                 clothName={product.title}
-                                imgSrc={api.image_path + product.mainImage}
+                                imgSrc={api.image_path + product.subImages[0]}
                                 daysLeft={product.days_left}
                                 deadLine={product.deadline}
                                 artist={product.artist_name}
+                                expire={product.expire}
                             />
                         </motion.div>
                     ))}
-            </div>
-            <div className="text-end my-4 ">
-                <Link className="font-courier">Contact</Link>
             </div>
         </div>
     );

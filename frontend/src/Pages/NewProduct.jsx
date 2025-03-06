@@ -17,7 +17,7 @@ const NewProduct = () => {
     const deadlineField = useRef();
     // const artistNameField = useRef();
     const goalField = useRef();
-    const mainImageField = useRef();
+    // const mainImageField = useRef();
     const subImageField = useRef();
     const compositionField = useRef();
     const colorField = useRef();
@@ -36,7 +36,7 @@ const NewProduct = () => {
         price: "",
         quantity: "",
         sizes: "",
-        mainImage: "",
+        // mainImage: "",
         subImages: "",
     });
 
@@ -79,9 +79,9 @@ const NewProduct = () => {
 
         setIsLoading(true);
         try {
-            const mainImageValues = mainImageField.current?.files
-                ? Array.from(mainImageField.current.files).map((file) => file)
-                : [];
+            // const mainImageValues = mainImageField.current?.files
+            //     ? Array.from(mainImageField.current.files).map((file) => file)
+            //     : [];
             const subImageValues = subImageField.current?.files
                 ? Array.from(subImageField.current.files).map((file) => file)
                 : [];
@@ -98,7 +98,7 @@ const NewProduct = () => {
                 quantity: quantityField.current.value.trim(),
                 artist_name: body.artist_name,
                 sizes: body.sizes, // Ensure `sizes` is updated
-                mainImage: mainImageValues, // Add mainImage
+                // mainImage: mainImageValues, // Add mainImage
                 subImages: subImageValues,  // Add subImage
             };
 
@@ -126,7 +126,7 @@ const NewProduct = () => {
                 colorField.current.value = '';
                 priceField.current.value = '';
                 quantityField.current.value = '';
-                mainImageField.current.value = null;
+                // mainImageField.current.value = null;
                 subImageField.current.value = null;
             }
         } catch (error) {
@@ -154,7 +154,7 @@ const NewProduct = () => {
                             showLabel
                             name="deadline"
                             label="Deadline"
-                            placeholder="Enter deadline (e.g., 30 days)"
+                            placeholder="Enter deadline (e.g., 30)"
                             error={formErrors.deadline}
                             fieldRef={deadlineField}
                         />
@@ -171,7 +171,7 @@ const NewProduct = () => {
                             showLabel
                             name="goal"
                             label="Goal"
-                            placeholder="Enter goal (e.g., 50 units)"
+                            placeholder="Enter goal (e.g., 50)"
                             error={formErrors.goal}
                             fieldRef={goalField}
                         />
@@ -207,18 +207,18 @@ const NewProduct = () => {
                             error={formErrors.quantity}
                             fieldRef={quantityField}
                         />
-                        <GeneralInput
+                        {/* <GeneralInput
                             showLabel
                             name="mainImage"
                             label="Main Image"
                             type="file"
                             multiple={false}
                             fieldRef={mainImageField}
-                        />
+                        /> */}
                         <GeneralInput
                             showLabel
                             name="subImage"
-                            label="Sub Images"
+                            label="Select multiple images"
                             type="file"
                             multiple={true}
                             fieldRef={subImageField}

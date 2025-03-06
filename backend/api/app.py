@@ -9,6 +9,7 @@ from flask_mail import Mail
 from apifairy import APIFairy
 from config import Config
 from api.redis import Cache
+from config import as_bool
 import stripe
 import os
 
@@ -19,7 +20,7 @@ mail = Mail()
 migrate = Migrate()
 apifairy = APIFairy()
 cache = None
-if os.environ.get('USE_CACHE') == 'True':
+if as_bool(os.environ.get('USE_CACHE')):
     cache = Cache()
 
 

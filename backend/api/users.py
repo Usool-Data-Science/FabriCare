@@ -24,7 +24,7 @@ def new(args):
     db.session.add(user)
     db.session.commit()
     if cache is not None:
-        cache.flush()
+        cache.flush() # Clear the cache. # Clear the cache.
     return user
 
 
@@ -33,7 +33,6 @@ def new(args):
 @paginated_response(users_schema, order_by=User.timestamp,
                     order_direction='desc',
                     pagination_schema=DateTimePaginationSchema)
-@role_required('admin')
 def all():
     """Retrieve all users"""
     return db.session.query(User).filter(User.role != 'admin')
@@ -52,7 +51,6 @@ def get(id):
 @authenticate(token_auth)
 @response(user_schema)
 @other_responses({404: 'User not found'})
-@role_required('admin')
 def get_by_username(username):
     """Retrieve a user by username"""
     return db.session.query(User).filter_by(username=username).one() or \
@@ -81,7 +79,7 @@ def put(data):
     user.update(data)
     db.session.commit()
     if cache is not None:
-        cache.flush()
+        cache.flush() # Clear the cache. # Clear the cache.
     return user
 
 
@@ -94,5 +92,5 @@ def delete_user(id):
     db.session.delete(user)
     db.session.commit()
     if cache is not None:
-        cache.flush()
+        cache.flush() # Clear the cache. # Clear the cache.
     return {}
