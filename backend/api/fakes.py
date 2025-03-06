@@ -76,7 +76,7 @@ def products(num):
                 title=title,
                 deadline=fake.date_this_year().year,
                 goal=fake.random_int(min=100, max=1000),
-                mainImage=fake.image_url(),
+                # mainImage=fake.image_url(),
                 subImages=[fake.image_url() for _ in range(3)],
                 composition=fake.word(),
                 color=fake.color_name(),

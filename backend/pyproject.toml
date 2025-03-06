@@ -1,5 +1,5 @@
 [project]
-name = "sweetLatex API"
+name = "Fabricare API"
 version = "1.0"
 description = "A modern Flask API backend for sweet latex ecommerce."
 authors = [
