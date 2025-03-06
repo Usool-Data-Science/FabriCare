@@ -25,7 +25,7 @@ const NavBar = ({ search, loginButton }) => {
     const cartSize = user?.cart_size ?? 0;
 
     return (
-        <nav className="fixed top-0 left-0 w-full bg-black text-gray-100 shadow-md z-50 pt-2 px-6 flex justify-between items-center border-b border-gray-700">
+        <nav className="fixed top-0 left-0 w-full bg-black text-gray-100 shadow-md z-50 pt-2 px-2 sm:px-6 gap-8 flex justify-between items-center border-b border-gray-700">
             {/* Logo */}
             <Link to="/landing" className="flex items-center">
                 <img src="/images/Fabricare.png" alt="Brand logo" className="h-14 sm:h-16 w-auto rounded-lg" />
