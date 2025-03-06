@@ -34,7 +34,7 @@ def new_sweater(data):
     """Create a new sweater"""
 
     # Extract the file uploads
-    main_image = data.get('mainImage')
+    # main_image = data.get('mainImage')
     sub_images = data.get('subImages')
     title = data.get('title')
 

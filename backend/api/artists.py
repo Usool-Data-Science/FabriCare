@@ -36,7 +36,7 @@ def create_artist(data):
 
     # Validate file type and size
     if not allowed_file(artist_image):
-        abort(400, description="Invalid mainImage file type.")
+        abort(400, description="Invalid artist image file type.")
 
     if artist_image.content_length > current_app.config.get('MAX_FILE_SIZE'):
         abort(400, description="Image exceeds size limit.")

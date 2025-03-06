@@ -75,9 +75,9 @@ class Config(object):
         'http://localhost:3000/oauth2/{provider}/callback'
 
     # API documentation
-    APIFAIRY_TITLE = 'SweetLatex API'
+    APIFAIRY_TITLE = 'Fabricare API'
     APIFAIRY_VERSION = '1.0'
-    APIFAIRY_UI = os.environ.get('DOCS_UI', 'elements')
+    APIFAIRY_UI = os.environ.get('DOCS_UI', 'rapidoc')
     APIFAIRY_TAGS = ['tokens', 'users', 'carts', 'artists', 'products']
 
     # email options
