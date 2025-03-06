@@ -22,7 +22,7 @@ export default function UserProvider({ children }) {
                     setAllUsers(data);
                     setUserPagination(pag);
                 } else {
-                    flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                    flash && flash(response.body?.message || "An unexpected error occurred", 'error');
                 }
                 return response;
             }
@@ -34,17 +34,18 @@ export default function UserProvider({ children }) {
         (async () => {
             setLoadingUser(true);
             if (api.isAuthenticated()) {
-                if (window.location.pathname !== '/') {
-                    const response = await api.get('/me');
-                    if (response.ok) {
-                        setUser(response.body);
-                        setAdminUser(response.body?.role === 'admin');
-                        fetchPaginatedUsers();
-                    } else {
-                        setUser(null);
-                        setAdminUser(false);
-                    }
+                // if (!user) {
+                const response = await api.get('/me');
+                if (response.ok) {
+                    setUser(response.body);
+                    setAdminUser(response.body?.role === 'admin');
+                    fetchPaginatedUsers();
+
+                } else {
+                    setUser(null);
+                    setAdminUser(false);
                 }
+                // }
             } else {
                 setUser(null);
                 setAdminUser(false);
@@ -63,7 +64,7 @@ export default function UserProvider({ children }) {
                     setAdminUser(response.body?.role === 'admin');
                 } else {
                     setUser(null);
-                    flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                    flash && flash(response.body?.message || "An unexpected error occurred", 'error');
                 }
             } catch (error) {
                 console.error('Error fetching user data after login:', error);
@@ -89,7 +90,7 @@ export default function UserProvider({ children }) {
                     flash && flash(`Successfully deleted ${username}`, 'success');
                     fetchPaginatedUsers(userPagination.limit, userPagination.offset);
                 } else {
-                    flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                    flash && flash(response.body?.message || "An unexpected error occurred", 'error');
                 }
             }
         },
@@ -110,7 +111,7 @@ export default function UserProvider({ children }) {
                 errorMessage.replace('Unauthorized', 'Your session timed out, please login again!')
                 flash && flash(errorMessage, 'error');
             } else {
-                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
             }
             return response;
         }
@@ -131,7 +132,7 @@ export default function UserProvider({ children }) {
                 errorMessage.replace('Unauthorized', 'Your session timed out, please login again!')
                 flash && flash(errorMessage, 'error');
             } else {
-                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
             }
             return response;
         }

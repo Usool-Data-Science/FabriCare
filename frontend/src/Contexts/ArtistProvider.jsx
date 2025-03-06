@@ -25,7 +25,7 @@ const ArtistProvider = ({ children }) => {
                         setArtistsPagination(pag);
                         return response;
                     } else {
-                        flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                        flash && flash(response.body?.message || "An unexpected error occurred", 'error');
                         return null;
                     }
                 } catch (error) {
@@ -45,7 +45,7 @@ const ArtistProvider = ({ children }) => {
             if (response.ok) {
                 setArtistNames(response?.body?.artists);
             } else {
-                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
             }
         }
     }, [api, flash, adminUser])
@@ -63,7 +63,7 @@ const ArtistProvider = ({ children }) => {
                 flash && flash(`${body.title} updated successfully`, 'success');
                 return response;
             } else {
-                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
                 return null;
             }
         } catch (error) {
@@ -86,7 +86,7 @@ const ArtistProvider = ({ children }) => {
                 errorMessage.replace('Unauthorized', 'Your session timed out, please login again!')
                 flash && flash(errorMessage, 'error');
             } else {
-                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
             }
             return response;
         }
@@ -101,7 +101,7 @@ const ArtistProvider = ({ children }) => {
                 flash && flash(`Successfully deleted order ${artistId}`, 'success');
                 fetchPaginatedArtists(artistsPagination.limit, artistsPagination.offset); // Re-fetch carts
             } else {
-                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
             }
         }
     }, [api, flash, fetchPaginatedArtists, artistsPagination.limit, artistsPagination.offset]);

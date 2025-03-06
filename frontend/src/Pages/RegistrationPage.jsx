@@ -60,7 +60,7 @@ const NewUser = () => {
     return (
         <Body>
             <div className="flex flex-col items-center">
-                <h1 className="text-3xl text-center font-extrabold text-slate-100 mt-8 mb-4">CREATE ACCOUNT</h1>
+                <h1 className="text-3xl text-center font-extrabold text-slate-100 mt-8 mb-4 font-courier">CREATE ACCOUNT</h1>
                 <div className="w-full max-w-2xl bg-transparent rounded-lg shadow-lg p-8">
                     <form
                         onSubmit={handleSubmit}
@@ -114,7 +114,7 @@ const NewUser = () => {
                         </div>
                         <button
                             type="submit"
-                            className="mt-6 p-3 text-lg font-bold text-slate-100 bg-indigo-600 rounded-lg hover:bg-indigo-500 transition-all duration-300 ease-in-out w-full mb-8"
+                            className="w-full md:w-4/5 lg:w-2/3 p-2 mt-6 text-lg font-bold border border-gray-50 text-slate-100 bg-transparent hover:text-red-500 transition-all duration-300 ease-in-out mb-8"
                             aria-busy={isLoading}
                             disabled={isLoading}
                         >

@@ -1,5 +1,6 @@
 import os
 from uuid import uuid4
+from marshmallow import ValidationError
 from flask import Blueprint, abort, current_app, send_from_directory
 from werkzeug.utils import secure_filename
 from apifairy import authenticate, body, response, other_responses
@@ -35,15 +36,21 @@ def new_sweater(data):
     # Extract the file uploads
     main_image = data.get('mainImage')
     sub_images = data.get('subImages')
+    title = data.get('title')
 
-    if not main_image or not sub_images:
-        abort(400, description="Missing mainImage or subImages.")
+    if db.session.query(Product).filter_by(title=title).first():
+        return abort(400, description="This product title already exists, try another!")
+
+    if not sub_images:
+        abort(400, description="Missing subImages.")
+    # if not main_image or not sub_images:
+    #     abort(400, description="Missing mainImage or subImages.")
 
     # Validate file type and size
-    if not allowed_file(main_image):
-        abort(400, description="Invalid mainImage file type.")
-    if main_image.content_length > current_app.config.get('MAX_FILE_SIZE'):
-        abort(400, description="Main image exceeds size limit.")
+    # if not allowed_file(main_image):
+    #     abort(400, description="Invalid mainImage file type.")
+    # if main_image.content_length > current_app.config.get('MAX_FILE_SIZE'):
+    #     abort(400, description="Main image exceeds size limit.")
 
     for img in sub_images:
         if not allowed_file(img):
@@ -55,20 +62,20 @@ def new_sweater(data):
     os.makedirs(current_app.config.get('MEDIA_PATH'), exist_ok=True)
 
     # Generate file paths
-    main_image_filename = f"{uuid4().hex}_{secure_filename(main_image.filename)}"
-    main_image_path = os.path.join(current_app.config.get('MEDIA_PATH'), main_image_filename)
+    # main_image_filename = f"{uuid4().hex}_{secure_filename(main_image.filename)}"
+    # main_image_path = os.path.join(current_app.config.get('MEDIA_PATH'), main_image_filename)
 
     sub_image_filenames = [f"{uuid4().hex}_{secure_filename(img.filename)}" for img in sub_images]
     sub_image_paths = [os.path.join(current_app.config.get('MEDIA_PATH'), img) for img in sub_image_filenames]
 
     try:
         # Save files to disk
-        main_image.save(main_image_path)
+        # main_image.save(main_image_path)
         for img, img_path in zip(sub_images, sub_image_paths):
             img.save(img_path)
 
         # Update file paths in the data dictionary
-        data['mainImage'] = main_image_filename
+        # data['mainImage'] = main_image_filename
         data['subImages'] = sub_image_filenames
         # data['subImages'] = [os.path.relpath(path, current_app.config.get('MEDIA_PATH')) for path in sub_image_paths]
 
@@ -85,12 +92,12 @@ def new_sweater(data):
         db.session.add(product)
         db.session.commit()
         if cache is not None:
-            cache.flush()
+            cache.flush() # Clear the cache. # Clear the cache.
 
     except IOError as io_err:
         db.session.rollback()
-        if os.path.exists(main_image_path):
-            os.remove(main_image_path)
+        # if os.path.exists(main_image_path):
+        #     os.remove(main_image_path)
         for img_path in sub_image_paths:
             if os.path.exists(img_path):
                 os.remove(img_path)
@@ -120,22 +127,22 @@ def update_product(data, id):
         abort(404, description="Product not found.")
 
     # Extract the file uploads
-    new_main_image = data.get('mainImage')
+    # new_main_image = data.get('mainImage')
     new_sub_images = data.get('subImages')
 
     # Prepare paths for potential new files
-    main_image_filename = None
-    main_image_path = None
+    # main_image_filename = None
+    # main_image_path = None
     sub_image_paths = []
 
-    if new_main_image:
-        # Validate and generate the path for the new main image
-        if not allowed_file(new_main_image):
-            abort(400, description="Invalid mainImage file type.")
-        if new_main_image.content_length > current_app.config.get('MAX_FILE_SIZE'):
-            abort(400, description="Main image exceeds size limit.")
-        main_image_filename = f"{uuid4().hex}_{secure_filename(new_main_image.filename)}"
-        main_image_path = os.path.join(current_app.config.get('MEDIA_PATH'), main_image_filename)
+    # if new_main_image:
+    #     # Validate and generate the path for the new main image
+    #     if not allowed_file(new_main_image):
+    #         abort(400, description="Invalid mainImage file type.")
+    #     if new_main_image.content_length > current_app.config.get('MAX_FILE_SIZE'):
+    #         abort(400, description="Main image exceeds size limit.")
+    #     main_image_filename = f"{uuid4().hex}_{secure_filename(new_main_image.filename)}"
+    #     main_image_path = os.path.join(current_app.config.get('MEDIA_PATH'), main_image_filename)
 
     if new_sub_images:
         # Validate and generate the paths for new sub-images
@@ -156,15 +163,15 @@ def update_product(data, id):
         os.makedirs(current_app.config.get('MEDIA_PATH'), exist_ok=True)
 
         # Handle the main image
-        if new_main_image:
-            # Delete the old main image
-            old_main_image_path = os.path.join(current_app.config.get('MEDIA_PATH'), product.mainImage)
-            if os.path.exists(old_main_image_path):
-                os.remove(old_main_image_path)
+        # if new_main_image:
+        #     # Delete the old main image
+        #     old_main_image_path = os.path.join(current_app.config.get('MEDIA_PATH'), product.mainImage)
+        #     if os.path.exists(old_main_image_path):
+        #         os.remove(old_main_image_path)
 
-            # Save the new main image
-            new_main_image.save(main_image_path)
-            data['mainImage'] = main_image_filename
+        #     # Save the new main image
+        #     new_main_image.save(main_image_path)
+        #     data['mainImage'] = main_image_filename
 
         # Handle sub-images
         if new_sub_images:
@@ -187,12 +194,12 @@ def update_product(data, id):
         product.update(data)
         db.session.commit()
         if cache is not None:
-            cache.flush()
+            cache.flush() # Clear the cache. # Clear the cache.
 
     except IOError as io_err:
         db.session.rollback()
-        if main_image_path and os.path.exists(main_image_path):
-            os.remove(main_image_path)
+        # if main_image_path and os.path.exists(main_image_path):
+        #     os.remove(main_image_path)
         for img_path in sub_image_paths:
             if os.path.exists(img_path):
                 os.remove(img_path)
@@ -207,8 +214,7 @@ def update_product(data, id):
     return product
 
 
-@products_bp.route('/sales/<int:id>', methods=['GET'])
-@authenticate(token_auth)
+@products_bp.route('/sales/<int:id>', methods=['GET'], strict_slashes=False)
 @response(product_schema)
 @other_responses({404: 'Products not found'})
 def get_product(id):
@@ -221,15 +227,15 @@ def get_product(id):
         Product: product with the given id.
     """
     product = db.session.get(Product, id) or abort(404)
-    customer_id = token_auth.current_user().id
-    user_cart = db.session.query(Cart).filter_by(customer_id=customer_id, product_id=id).first()
-    product.quantity_in_cart = user_cart.quantity if user_cart else 0
 
-
+    # Needed only if we need to know the quantity of such product a user already added
+    # customer_id = token_auth.current_user().id
+    # user_cart = db.session.query(Cart).filter_by(customer_id=customer_id, product_id=id).first()
+    # product.quantity_in_cart = user_cart.quantity if user_cart else 0
     return product
 
 
-@products_bp.route('/products', methods=['GET'])
+@products_bp.route('/products', methods=['GET'], strict_slashes=False)
 @limiter.limit("1 per day")
 @paginated_response(products_schema, order_by=Product.timestamp,
                     order_direction='desc',
@@ -239,7 +245,7 @@ def all_products():
     return db.session.query(Product)
 
 
-@products_bp.route('/artists/<name>/products', methods=['GET'])
+@products_bp.route('/artists/<name>/products', methods=['GET'], strict_slashes=False)
 @authenticate(token_auth)
 @paginated_response(products_schema, order_by=Product.timestamp,
                     order_direction='desc',
@@ -251,15 +257,66 @@ def all_user_product(name):
     return db.session.query(Product).filter(Artist.id == artist.id)
 
 
-@products_bp.route('/products/<int:id>', methods=['DELETE'])
+@products_bp.route('/products/<int:id>', methods=['DELETE'], strict_slashes=False)
 @authenticate(token_auth)
 @role_required('admin')
-@other_responses({403: 'Not allowed to delete the post'})
+@other_responses({403: 'Not allowed to delete the product'})
 def delete_product(id):
-    """Delete an sweater"""
+    """Delete a sweater"""
     product = db.session.get(Product, id) or abort(404)
     db.session.delete(product)
     db.session.commit()
     if cache is not None:
-        cache.flush()
+            cache.flush() # Clear the cache. # Clear the cache.
+    return {}, 204
+
+
+@products_bp.route('/products-all', methods=['DELETE'], strict_slashes=False)
+@authenticate(token_auth)
+@role_required('admin')
+@other_responses({403: 'Action denied', 404: 'Product not found'})
+def delete_all_products() -> None:
+    """Delete all products
+    """
+    products = db.session.query(Product).all() or abort(404)
+    for product in products:
+        db.session.delete(product)
+        db.session.commit()
+    if cache is not None:
+            cache.flush() # Clear the cache.
+
+    return {}, 204
+
+@products_bp.route('/products-all', methods=['PUT'], strict_slashes=False)
+@authenticate(token_auth)
+@role_required('admin')
+@other_responses({403: 'Action denied', 404: 'Product not found'})
+def expire_all_products() -> None:
+    """Expires all products
+    """
+    products = db.session.query(Product).all() or abort(404)
+    for product in products:
+        product.days_left = 0
+        product.update_expiration_status()
+        db.session.commit()
+    if cache is not None:
+            cache.flush() # Clear the cache.
+
+    return {}, 204
+
+@products_bp.route('/expire/<int:id>', methods=['PUT'], strict_slashes=False)
+@authenticate(token_auth)
+@role_required('admin')
+@other_responses({403: 'Action denied', 404: 'Product not found'})
+def expire_product(id) -> None:
+    """Expires all products
+    """
+    product = db.session.query(Product).filter_by(id=id).first() or abort(404)
+    if product:
+        product.days_left = 0
+        product.update_expiration_status()
+    db.session.commit()
+    if cache is not None:
+            cache.flush() # Clear the cache.
+
     return {}, 204

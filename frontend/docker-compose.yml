@@ -33,6 +33,7 @@ services:
       - ../backend/.env
     volumes:
       - ../backend/mysqlData:/mysqlData
+      # - ../backend/migrations:/migrations
     restart: always
     networks:
       - mynet

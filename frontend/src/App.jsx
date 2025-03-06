@@ -4,6 +4,7 @@ import PrivateRoute from "./Components/PrivateRoute"
 import Sale from "./Components/Sale"
 import LoginPage from "./Pages/LoginPage"
 import LandingPage from "./Pages/LandingPage"
+import HealthPage from "./Pages/HealthPage"
 import AdminPage from "./Pages/AdminPage"
 import ModifyProduct from "./Pages/ModifyProduct"
 import NewProduct from "./Pages/NewProduct"
@@ -15,7 +16,7 @@ import SuccessPage from "./Pages/SuccessPage"
 import CancelPage from "./Pages/CancelPage"
 import ResetRequestPage from "./Pages/ResetRequestPage"
 import ResetPage from "./Pages/ResetPage"
-import HealthPage from "./Pages/HealthPage"
+import ArchivePage from "./Pages/ArchivePage"
 
 
 function App() {
@@ -34,7 +35,6 @@ function App() {
 
           {/* Private Routes */}
           <Route path="/home" element={<PrivateRoute><HomePage /></PrivateRoute>} />
-          <Route path="/sales/:id" element={<PrivateRoute><Sale /></PrivateRoute>} />
           <Route path="/admin" element={<PrivateRoute><AdminPage /></PrivateRoute>} />
           <Route path="/products" element={<PrivateRoute><NewProduct /></PrivateRoute>} />
           <Route path="/me/carts" element={<PrivateRoute><CartPage /></PrivateRoute>} />
@@ -43,6 +43,8 @@ function App() {
           <Route path="/products/:id" element={<PrivateRoute><ModifyProduct /></PrivateRoute>} />
 
           {/* Fallback */}
+          <Route path="/sales/:id" element={<Sale />} />
+          <Route path="/collaboration" element={<ArchivePage />} />
           <Route path="*" element={<Navigate to="/home" />} />
         </Routes>
       </ProviderStore>

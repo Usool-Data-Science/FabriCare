@@ -16,8 +16,10 @@ RUN pip install gunicorn pymysql cryptography
 
 # Copy application code
 COPY api api
+COPY migrations migrations
 # COPY media media
 COPY sweet.py config.py boot.sh ./
+RUN chmod a+x boot.sh
 
 # Conditionally copy migrations folder if it exists
 # RUN if [ -d "migrations" ]; then cp -r migrations ./; fi

@@ -19,7 +19,7 @@ const ProductProvider = ({ children }) => {
                 setProductPagination(pag);
                 return response;
             } else {
-                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
                 return null;
             }
         } catch (error) {
@@ -37,7 +37,7 @@ const ProductProvider = ({ children }) => {
             if (response.ok) {
                 return response.body;
             } else {
-                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
             }
         } catch (error) {
             console.error(`Error fetching product ${productId}:`, error);
@@ -60,7 +60,7 @@ const ProductProvider = ({ children }) => {
                 errorMessage.replace('Unauthorized', 'Your session timed out, please login again!')
                 flash && flash(errorMessage, 'error');
             } else {
-                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
             }
             return response;
         }
@@ -94,7 +94,50 @@ const ProductProvider = ({ children }) => {
                 flash && flash(`Successfully deleted product ID: ${productId}`, 'success');
                 fetchPaginatedProducts(productPagination.limit, productPagination.offset); // Re-fetch products
             } else {
-                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
+            }
+        }
+    }, [api, flash, fetchPaginatedProducts, productPagination]);
+
+    const deleteAllProducts = useCallback(async () => {
+        const choice = window.confirm(`Are you sure you want to delete ALL products?`);
+        if (choice) {
+            const response = await api.delete('/products-all');
+            if (response.ok) {
+                flash && flash("Successfully deleted all products", 'success');
+                fetchPaginatedProducts(productPagination.limit, productPagination.offset); // Re-fetch products
+            } else {
+                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
+            }
+        }
+    }, [api, flash, fetchPaginatedProducts, productPagination]);
+
+    useEffect(() => {
+        fetchPaginatedProducts();
+    }, [fetchPaginatedProducts]);
+
+    const expireAllProducts = useCallback(async () => {
+        const choice = window.confirm(`Are you sure you want to expire ALL products?`);
+        if (choice) {
+            const response = await api.put('/products-all', {});
+            if (response.ok) {
+                flash && flash("Successfully expired all products", 'success');
+                fetchPaginatedProducts(productPagination.limit, productPagination.offset); // Re-fetch products
+            } else {
+                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
+            }
+        }
+    }, [api, flash, fetchPaginatedProducts, productPagination]);
+
+    const expireProduct = useCallback(async (productId, title) => {
+        const choice = window.confirm(`Are you sure you want to expire ${title}?`);
+        if (choice) {
+            const response = await api.put(`/expire/${productId}`, {});
+            if (response.ok) {
+                flash && flash(`${title} has been expired!`, 'success');
+                fetchPaginatedProducts(productPagination.limit, productPagination.offset); // Re-fetch products
+            } else {
+                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
             }
         }
     }, [api, flash, fetchPaginatedProducts, productPagination]);
@@ -104,7 +147,7 @@ const ProductProvider = ({ children }) => {
     }, [fetchPaginatedProducts]);
 
     return (
-        <ProductContext.Provider value={{ products, setProducts, productPagination, fetchProduct, updateProduct, createProduct, fetchPaginatedProducts, deleteProduct }}>
+        <ProductContext.Provider value={{ products, setProducts, productPagination, fetchProduct, updateProduct, createProduct, fetchPaginatedProducts, deleteProduct, deleteAllProducts, expireProduct, expireAllProducts }}>
             {children}
         </ProductContext.Provider>
     );

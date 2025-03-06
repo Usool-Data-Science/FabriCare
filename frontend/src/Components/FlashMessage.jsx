@@ -6,7 +6,7 @@ export default function FlashMessage() {
 
     return (
         <div
-            className={`transition-all transform font-myriad duration-300 ease-out 
+            className={`transition-all transform font-myriad duration-300 ease-out w-fit mx-auto
         ${visible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'}
         w-1/2 z-50 self-center`}
             style={{ pointerEvents: visible ? 'auto' : 'none' }}

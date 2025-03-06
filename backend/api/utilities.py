@@ -13,19 +13,20 @@ fake = Faker()
 def users(num):
     """Creates the given number of fake users"""
     try:
-
-        for i in range(num):
-            fake_user = User(
-            first_name=fake.name(),
-            last_name=fake.last_name(),
-            username=fake.user_name(),
-            email=fake.email(),
-            date_joined=fake.date_time_this_year(tzinfo=timezone.utc),
-            role=random.choice(['client', 'moderator'])
-        )
-            fake_user.password = fake.password(length=12)
-            db.session.add(fake_user)
-            db.session.commit()
+        if num and num > 0:
+            for i in range(num):
+                fake_user = User(
+                first_name=fake.name(),
+                last_name=fake.last_name(),
+                username=fake.user_name(),
+                email=fake.email(),
+                date_joined=fake.date_time_this_year(tzinfo=timezone.utc),
+                role=random.choice(['client', 'moderator'])
+            )
+                fake_user.password = fake.password(length=12)
+                db.session.add(fake_user)
+                db.session.commit()
+        print('Creating test user and admin...')
         u1 = User(first_name='non-admin', last_name='user', username='testuser', email='non-admin@gmail.com', password='123456')
         u2 = User(first_name='admin', last_name='user', username='testadmin', email='adminuser@gmail.com', password='123456', role='admin')
         db.session.add_all([u1, u2])
@@ -127,7 +128,8 @@ def carts(num):
             fake_cart = Cart(
                 quantity=fake.random_int(min=1, max=5),  # Random quantity between 1 and 5
                 customer_id=user.id,  # Assign the random user
-                product_id=product.id  # Assign the random Product
+                product_id=product.id,  # Assign the random Product
+                size=random.choice(["S", "M", "L", "XL"]),
             )
             db.session.add(fake_cart)
         db.session.commit()

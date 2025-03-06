@@ -28,7 +28,7 @@ export default function CartProvider({ children }) {
                         setCartsPagination(pag);
                         return response;
                     } else {
-                        flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                        flash && flash(response.body?.message || "An unexpected error occurred", 'error');
                         return null;
                     }
                 } catch (error) {
@@ -44,7 +44,7 @@ export default function CartProvider({ children }) {
     // Get current user Cart
     const fetchPagUserCart = useCallback(async (limit = 5, offset = 0,) => {
         setIsCartLoading(true); // Set loading state
-        if (user && !adminUser) {
+        if (!adminUser && api.isAuthenticated()) {
             try {
                 const cartResponse = await api.get('/me/carts', { limit, offset });
                 if (cartResponse.ok) {
@@ -67,25 +67,30 @@ export default function CartProvider({ children }) {
         }
     }, [api, flash, adminUser]);
 
-
     useEffect(() => {
-        fetchPaginatedCarts();
-        fetchPagUserCart();
-    }, [fetchPaginatedCarts, fetchPagUserCart]);
-    // console.log("this is the user cart: " + userCart)
+        (async () => {
+            if (user) {
+                if (adminUser) {
+                    fetchPaginatedCarts();
+                } else {
+                    fetchPagUserCart();
+                }
+            }
+        })();
+    }, [api, adminUser, user, fetchPagUserCart, fetchPaginatedCarts]);
 
     // Add to cart
-    const addToCart = useCallback(async (item_id) => {
-        if (user) {
-            const response = await api.post(`/products/carts/${item_id}`, {});
-            if (response.ok) {
-                flash && flash('Item added to cart', 'success');
-                return response;
-            } else {
-                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
-            }
+    const addToCart = useCallback(async (item_id, selectedSize) => {
+        // if (user) {
+        const response = await api.post(`/products/carts/${item_id}`, { size: selectedSize });
+        if (response.ok) {
+            flash && flash('Item added to cart', 'success');
+            return response;
+        } else {
+            flash && flash(response.body?.message || "An unexpected error occurred", 'error');
         }
-    }, [user, api, flash]);
+        // }
+    }, [api, flash]);
 
 
     // Delete a customer's cart
@@ -97,7 +102,7 @@ export default function CartProvider({ children }) {
                 flash && flash(`Successfully deleted cart ${cartId}`, 'success');
                 fetchPaginatedCarts(cartsPagination.limit, cartsPagination.offset); // Re-fetch carts
             } else {
-                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
             }
         }
     }, [api, flash, fetchPaginatedCarts, cartsPagination.limit, cartsPagination.offset]);
@@ -112,24 +117,32 @@ export default function CartProvider({ children }) {
                 // Update the user's cart after removing the product
                 fetchPagUserCart(userCartPag.limit, userCartPag.offset);
             } else {
-                flash && flash(response.body?.description || response.body?.message || "An unexpected error occurred", 'error');
+                flash && flash(response.body?.message || "An unexpected error occurred", 'error');
             }
         }
     }, [api, flash, fetchPagUserCart, userCartPag.limit, userCartPag.offset]);
 
     // Increment product's quantity in the cart
-    const incrementQuantity = useCallback(async () => {
-        if (user) {
-            console.log('User is incrementing quantity in cart');
+    const incrementQuantity = useCallback(async (item_id) => {
+        const response = await api.put(`/me/carts/incr/${item_id}`, {});
+        if (response.ok) {
+            flash && flash('Quantity incremented', 'success');
+            return response;
+        } else {
+            flash && flash(response.body?.message || "An unexpected error occurred", 'error');
         }
-    }, [user])
+    }, [api, flash])
 
     // Decrement product's quantity in the cart
-    const decrementQuantity = useCallback(async () => {
-        if (user) {
-            console.log('User is decrementing quantity in cart');
+    const decrementQuantity = useCallback(async (item_id) => {
+        const response = await api.put(`/me/carts/decr/${item_id}`, {});
+        if (response.ok) {
+            flash && flash('Quantity decremented', 'success');
+            return response;
+        } else {
+            flash && flash(response.body?.message || "An unexpected error occurred", 'error');
         }
-    }, [user])
+    }, [api, flash])
 
     return (
         <CartContext.Provider value={{
@@ -137,6 +150,7 @@ export default function CartProvider({ children }) {
             userCart,
             setUserCart,
             totalPrice,
+            setTotalPrice,
             isCartLoading,
             removeFromCart,
             addToCart,

@@ -18,7 +18,7 @@ export default function ResetPage() {
 
     useEffect(() => {
         if (!token) {
-            navigate('/landing');
+            navigate('/');
         }
         else {
             passwordField.current.focus();

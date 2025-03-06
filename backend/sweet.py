@@ -20,18 +20,21 @@ def create(num):
         num * 10 Products, num * 2 artist, num * 3 orders and num * 3 carts.
     """
     try:
-        artist_count = num * 2
-        products_count = num * 10
-        orders_count = num * 3
-        carts_count = num * 3
-        print("Creating {} users, {} artists, {} products, {} orders and {} carts.".format(
-            num, artist_count, products_count, orders_count, carts_count
-        ))
-        users(num)
-        artists(artist_count)
-        products(products_count)
-        orders(orders_count)
-        carts(carts_count)
+        if num and num > 0:
+            artist_count = num * 2
+            products_count = num * 10
+            orders_count = num * 3
+            carts_count = num * 3
+            print("Creating {} users, {} artists, {} products, {} orders and {} carts.".format(
+                num, artist_count, products_count, orders_count, carts_count
+            ))
+            users(num)
+            artists(artist_count)
+            products(products_count)
+            orders(orders_count)
+            carts(carts_count)
+        else:
+            users(0)
     except Exception as e:
         print("Error: {}".format(e))
 
@@ -41,7 +44,7 @@ if not app.debug:
         os.mkdir('logs')
 
     # File Error Logging
-    file_handler = RotatingFileHandler('logs/fabricare.log', maxBytes=10240, backupCount=10)
+    file_handler = RotatingFileHandler('logs/sweetlatex.log', maxBytes=10240, backupCount=10)
     file_handler.setFormatter(logging.Formatter(
         '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
     ))

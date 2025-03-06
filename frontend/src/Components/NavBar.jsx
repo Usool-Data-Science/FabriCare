@@ -1,9 +1,9 @@
-import { IoPersonOutline } from "react-icons/io5";
+import { IoEnterOutline, IoPersonOutline } from "react-icons/io5";
 import { SlBag } from "react-icons/sl";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useUser } from "../Contexts/UserProvider";
 import { IoMdPerson } from "react-icons/io";
-import { MdDangerous, MdOutlineSettings } from "react-icons/md";
+import { MdDangerous } from "react-icons/md";
 import { useState } from "react";
 import { useProduct } from "../Contexts/ProductProvider";
 
@@ -12,6 +12,7 @@ const NavBar = ({ search, loginButton }) => {
     const { user, adminUser, logout } = useUser();
     const { products } = useProduct();
     const [, setFilteredProducts] = useState(products);
+    const location = useLocation();
 
     const handleSearch = (e) => {
         const value = e.target.value.toLowerCase();
@@ -24,17 +25,15 @@ const NavBar = ({ search, loginButton }) => {
     const cartSize = user?.cart_size ?? 0;
 
     return (
-        <div className="mb-4">
+        <nav className="fixed top-0 left-0 w-full bg-black text-gray-100 shadow-md z-50 pt-2 px-6 flex justify-between items-center border-b border-gray-700">
             {/* Logo */}
-            <div className="absolute top-2 z-50 left-4 sm:left-8 w-16 h-24 rounded-full">
-                <a href="/">
-                    <img src="/images/Fabricare.png" alt="Brand logo" className="h-15 w-32 rounded-full" />
-                </a>
-            </div>
+            <Link to="/landing" className="flex items-center">
+                <img src="/images/Fabricare.png" alt="Brand logo" className="h-14 sm:h-16 w-auto rounded-lg" />
+            </Link>
 
-            <div className="mb-4 sticky border-b-4 border-b-gray-20">
+            <div className="">
                 {/* Navbar Items */}
-                <div className="flex justify-end items-center gap-4 xl:gap-16 mr-4 lg:mr-8 text-xs sm:text-sm lg:text-lg xl:text-xl font-courier">
+                <div className={`flex justify-end items-baseline space-x-2 sm:space-x-8 lg:space-x-10 xl:space-x-12 ${user ? "" : "mr-4"} sm:mr-4 lg:mr-8 text-xs sm:text-sm lg:text-lg xl:text-xl font-courier`}>
                     {/* Searchbar */}
                     {search && (
                         <div className="form-control">
@@ -48,83 +47,94 @@ const NavBar = ({ search, loginButton }) => {
                         </div>
                     )}
 
-                    <div className={`flex gap-4 ${user ? `pt-3` : `pt-0`}`}>
-                        <Link to="#">
-                            <span className="text-red-600 text-sm font-courier hover:underline hover:underline-offset-2">
+                    {/* Navigation Links */}
+                    <div className="flex items-center space-x-6 sm:space-x-8 lg:space-x-10 xl:space-x-12">
+                        <Link to="/">
+                            <span className={`text-sm sm:text-lg font-courier hover:underline hover:underline-offset-2
+                ${location.pathname === "/" || location.pathname === "/home" ? 'text-red-600' : 'text-gray-100'}`}>
                                 Presale
                             </span>
                         </Link>
-
-
-                        <Link to="#">
-                            <span className="text-gray-100 text-sm font-courier hover:underline hover:underline-offset-2">
+                        <Link to="/collaboration">
+                            <span className={`text-sm sm:text-lg font-courier hover:underline hover:underline-offset-2
+                ${location.pathname === "/collaboration" ? 'text-red-600' : 'text-gray-100'}`}>
                                 Archive
                             </span>
                         </Link>
                     </div>
 
                     {/* Authenticated User Features */}
-                    {user && (
-                        <div className="flex">
-                            {/* Cart */}
-                            {!adminUser && <Link to="/me/carts" tabIndex={0} role="button" className="btn btn-ghost btn-circle">
-                                <div className="indicator">
-                                    <span className="badge badge-sm indicator-item">{cartSize}</span>
-                                    <SlBag size={25} />
-                                </div>
-                            </Link>}
+                    {user ? (
+                        <>
+                            {!adminUser && (
+                                <a href="/me/carts" tabIndex={0} role="button" className="btn btn-ghost btn-circle">
+                                    <div className="indicator">
+                                        <span className="badge badge-sm indicator-item">{cartSize}</span>
+                                        <SlBag className="w-5 h-5 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9" />
+                                    </div>
+                                </a>
+                            )}
 
                             {/* Avatar Dropdown */}
                             <div className="dropdown dropdown-end">
                                 <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                                    <IoPersonOutline size={25} />
+                                    <IoPersonOutline className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9" />
                                 </div>
-                                <ul
-                                    tabIndex={0}
-                                    className="menu menu-sm dropdown-content bg-gray-500 rounded-box mt-3 w-52 max-w-fit p-2 shadow gap-4 z-50">
+                                <ul className="menu menu-sm dropdown-content border border-gray-50 m-3 w-52 max-w-fit p-2 gap-4 z-100 bg-black">
                                     <Link className="flex justify-start items-end gap-4" to="">
-                                        <IoMdPerson size={25} />
-                                        <span className="text-gray-100 font-arvo pr-6 hover:underline hover:underline-offset-2">Profile</span>
+                                        <IoMdPerson className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9" />
+                                        <span className="text-gray-100 font-arvo pr-6 hover:underline hover:underline-offset-2">
+                                            Profile
+                                        </span>
                                     </Link>
-                                    <Link className="flex justify-start gap-4 items-end" to="">
-                                        <MdOutlineSettings size={25} />
-                                        <span className="text-gray-100 font-arvo pr-6 hover:underline hover:underline-offset-2">Settings</span>
-                                    </Link>
-                                    <Link
-                                        to="/"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            logout();
-                                        }}
-                                        className="flex justify-start gap-4 items-end">
-                                        <MdDangerous size={25} className="text-red-500" />
-                                        <span className="text-gray-100 font-arvo pr-6 hover:underline hover:underline-offset-2 hover:text-red-500">Logout</span>
+                                    <Link to="/landing" onClick={(e) => { e.preventDefault(); logout(); }} className="flex justify-start gap-4 items-end">
+                                        <MdDangerous className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 text-gray-50" />
+                                        <span className="text-gray-100 font-arvo pr-6 hover:underline hover:underline-offset-2 hover:text-red-500">
+                                            Logout
+                                        </span>
                                     </Link>
                                 </ul>
                             </div>
-                        </div>
-                    )}
+                        </>
+                    ) : (
+                        loginButton && (
+                            <>
+                                {!adminUser && (
+                                    <a href="/me/carts" tabIndex={0} role="button" className="btn btn-ghost btn-circle">
+                                        <div className="indicator">
+                                            {/* <span className="badge badge-sm indicator-item">{cartSize}</span> */}
+                                            <SlBag className="w-5 h-5 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9" />
+                                        </div>
+                                    </a>
+                                )}
 
-                    {/*                     
-                    {!user && (
-                        <Link to="/">
-                            <span className="text-gray-100 font-arvo pr-6 hover:underline hover:underline-offset-2">
-                                Instagram
-                            </span>
-                        </Link>
-                    )} */}
-
-                    {/* Login Button */}
-                    {!user && loginButton && (
-                        <Link to="/login">
-                            <span className="text-green-300 text-sm font-courier pr-6 hover:underline hover:underline-offset-2">
-                                Login
-                            </span>
-                        </Link>
+                                {/* Avatar Dropdown */}
+                                <div className="dropdown dropdown-end">
+                                    <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                                        <IoPersonOutline className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9" />
+                                    </div>
+                                    <ul className="menu menu-sm dropdown-content border border-gray-50 m-3 w-52 max-w-fit p-2 gap-4 z-100 bg-black">
+                                        <Link className="flex justify-start items-end gap-4" to="">
+                                            <IoMdPerson className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9" />
+                                            <span className="text-gray-100 font-arvo pr-6 hover:underline hover:underline-offset-2">
+                                                Profile
+                                            </span>
+                                        </Link>
+                                        <Link to="/login" className="flex justify-start gap-4 items-end">
+                                            <IoEnterOutline className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 text-gray-50" />
+                                            <span className="text-gray-100 font-arvo pr-6 hover:underline hover:underline-offset-2 hover:text-green-500">
+                                                Login
+                                            </span>
+                                        </Link>
+                                    </ul>
+                                </div>
+                            </>
+                        )
                     )}
                 </div>
+
             </div>
-        </div>
+        </nav>
     );
 };
 

@@ -3,7 +3,7 @@ if [ -d "migrations" ]; then
     echo "Migrations folder found. Running flask db upgrade head..."
     while true; do
         flask db upgrade head
-        # flask fakes create 5    # No need to populate again.
+        flask fakes create 0
         if [[ "$?" == "0" ]]; then
             echo "Upgrade and fakes creation successful."
             break

@@ -15,7 +15,7 @@ def http_error(error):
         'description': error.description,
     }, error.code
 
-
+ 
 @errors_bp.app_errorhandler(IntegrityError)
 def sqlalchemy_integrity_error(error):  # pragma: no cover
     return {
