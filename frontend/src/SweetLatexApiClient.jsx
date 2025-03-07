@@ -1,10 +1,12 @@
+import asBool from "../public/js/utilities";
+
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL || '';
 
 export default class SweetLatexApiClient {
     constructor(onError) {
         this.onError = onError;
         this.base_url = BASE_API_URL + '/api';
-        this.image_path = BASE_API_URL + '/api/media/';
+        this.image_path = `${asBool(import.meta.env.VITE_BASE_USE_MEDIA) ? BASE_API_URL + '/api/media/' : ''}`;
     }
 
     async request(options) {
