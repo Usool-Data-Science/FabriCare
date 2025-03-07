@@ -72,10 +72,10 @@ def products(num):
 
             fake_product = Product(
                 title=title,
-                deadline=fake.date_this_year().year,
+                deadline=fake.date_this_year().weekday(),
                 artist_name=artist.name,
                 goal=fake.random_int(min=100, max=1000),
-                mainImage=fake.image_url(),
+                # mainImage=fake.image_url(),
                 subImages=[fake.image_url() for _ in range(3)],
                 composition=fake.word(),
                 color=fake.color_name(),
