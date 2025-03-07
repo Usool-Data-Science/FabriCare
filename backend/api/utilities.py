@@ -10,6 +10,34 @@ from api.models import User, Product, Cart, Order, Artist
 
 fake = Faker()
 
+CLOTHES = {
+    'black':[
+        "/images/clothes/black1.jpg",
+        "/images/clothes/black2.jpg",
+        "/images/clothes/black3.jpg",
+        "/images/clothes/black4.jpg",
+    ],
+    'green':[
+        "/images/clothes/green1.jpg",
+        "/images/clothes/green2.jpg",
+        "/images/clothes/green3.jpg",
+        "/images/clothes/green4.jpg",
+    ],
+    'red':[
+        "/images/clothes/red1.jpg",
+        "/images/clothes/red2.jpg",
+        "/images/clothes/red3.jpg",
+        "/images/clothes/red4.jpg",
+        "/images/clothes/red5.jpg",
+    ],
+    'snake':[
+        "/images/clothes/snake1.jpg",
+        "/images/clothes/snake2.jpg",
+        "/images/clothes/snake3.jpg",
+        "/images/clothes/snake4.jpg",
+    ],
+}
+
 def users(num):
     """Creates the given number of fake users"""
     try:
@@ -69,14 +97,14 @@ def products(num):
 
             # Choose a random artist
             artist = Artist.query.order_by(db.func.random()).first()
-
+            cloth_key = random.choice(list(CLOTHES.keys()))
             fake_product = Product(
                 title=title,
-                deadline=fake.date_this_year().weekday(),
+                deadline=max(2, fake.date_this_year().weekday()),
                 artist_name=artist.name,
                 goal=fake.random_int(min=100, max=1000),
                 # mainImage=fake.image_url(),
-                subImages=[fake.image_url() for _ in range(3)],
+                subImages=CLOTHES.get(cloth_key),
                 composition=fake.word(),
                 color=fake.color_name(),
                 style=fake.word(),
