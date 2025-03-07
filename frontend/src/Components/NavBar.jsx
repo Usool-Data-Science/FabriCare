@@ -49,7 +49,7 @@ const NavBar = ({ search, loginButton }) => {
 
                     {/* Navigation Links */}
                     <div className="flex items-center space-x-6 sm:space-x-8 lg:space-x-10 xl:space-x-12">
-                        <Link to="/">
+                        <Link to="/landing">
                             <span className={`text-sm sm:text-lg font-courier hover:underline hover:underline-offset-2
                 ${location.pathname === "/" || location.pathname === "/home" ? 'text-red-600' : 'text-gray-100'}`}>
                                 Presale
